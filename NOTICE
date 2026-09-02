@@ -1,0 +1,14 @@
+Cybwaycard
+Copyright V. Vikram
+
+Licensed under the Apache License, Version 2.0.
+
+This product references the OWASP Top 10 for LLM Applications by category
+name with attribution to the OWASP Foundation, and the NIST AI Risk
+Management Framework 1.0 (a US Government work) by function and category
+identifier. The "model card" section structure follows the publicly
+described Model Cards reporting format by name only. See LEGAL.md.
+
+The hash-chained audit log, run manifest, repo-hygiene controls, and drift
+comparison modules are adapted from the author's sibling project Cybwaydb
+(Apache-2.0, same copyright holder).

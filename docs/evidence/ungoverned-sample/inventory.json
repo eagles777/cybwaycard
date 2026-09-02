@@ -1,0 +1,80 @@
+{
+  "root": "<ungoverned-sample>",
+  "files_scanned": 3,
+  "python_files": 1,
+  "doc_files": 2,
+  "providers": {
+    "OpenAI": [
+      {
+        "file": "app.py",
+        "line": 4,
+        "kind": "import",
+        "snippet": "import openai"
+      }
+    ]
+  },
+  "call_sites": [
+    {
+      "file": "app.py",
+      "line": 10,
+      "kind": "client.chat.completions.create",
+      "snippet": "resp = client.chat.completions.create("
+    }
+  ],
+  "model_ids": [
+    {
+      "file": "app.py",
+      "line": 11,
+      "kind": "model_id",
+      "snippet": "gpt-4o"
+    }
+  ],
+  "model_env_override": [],
+  "env_keys": [],
+  "hardcoded_secrets": [
+    {
+      "file": "app.py",
+      "line": 6,
+      "kind": "generic_api_key",
+      "snippet": "client = openai.OpenAI(api_key=<redacted>)"
+    }
+  ],
+  "exec_primitives": [
+    {
+      "file": "app.py",
+      "line": 19,
+      "kind": "exec",
+      "snippet": "subprocess.run(command, shell=True)"
+    }
+  ],
+  "markers": {},
+  "ai_files": [
+    "app.py"
+  ],
+  "docs_data_statement": [],
+  "intended_use": "Asks the model what to run, then runs it.",
+  "has_readme": true,
+  "has_license": false,
+  "has_notice": false,
+  "has_tests": false,
+  "has_ci": false,
+  "ci_model_secrets": [],
+  "benchmark_files": [],
+  "unpinned_deps": [
+    {
+      "file": "requirements.txt",
+      "line": 1,
+      "kind": "unpinned",
+      "snippet": "openai"
+    },
+    {
+      "file": "requirements.txt",
+      "line": 2,
+      "kind": "unpinned",
+      "snippet": "requests>=2"
+    }
+  ],
+  "deps_declared": 2,
+  "parse_errors": [],
+  "uses_ai": true
+}

@@ -1,0 +1,23 @@
+{
+  "files": {
+    "audit.log.jsonl": "49b0ca48c1a94e76a8d2bdaeab750b420da0ff24c095fc30781d2935a5ad17c6",
+    "card.json": "30f5c43f49488a6a7c422de222723a8c47f943604f995269989e07a54b1395ee",
+    "card.md": "767a9c59e35726d1b5d0ec503444c9bc46a3b931abafbe8549dbab480451833d",
+    "findings.json": "7ca3f003d976b617ced99ef476a96d3ae4e7a5006f0e30a6be1f9152555d1fcb",
+    "inventory.json": "47cceab45c244b770c05035dbf4efae2cdc6b8893fcf7d8011aa38bd5fd7949a"
+  },
+  "generated_at": "2026-09-02T00:00:00+00:00",
+  "manifest_sha256": "a7b9e417861747ddd43a6d26738ad43412c809953123bbc471dda9edeb665021",
+  "summary": {
+    "cost_usd": 0,
+    "fail": 0,
+    "mode": "static",
+    "na": 0,
+    "pass": 19,
+    "score_pct": 100,
+    "subject": "Governed sample",
+    "total": 19,
+    "uses_ai": true,
+    "verdict": "GOVERNED"
+  }
+}

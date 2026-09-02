@@ -1,0 +1,319 @@
+[
+  {
+    "check_id": "CARD-001",
+    "title": "LLM usage inventoried",
+    "status": "NA",
+    "severity": "info",
+    "area": "Inventory",
+    "owasp": [],
+    "ai_rmf": [
+      "MAP 2"
+    ],
+    "evidence": [],
+    "guidance": "Every model call site should be known and listed. Cybwaycard derives this from imports, API hosts and call names; keep model access behind one module so the inventory stays short.",
+    "note": "No model SDK import, API host, or model call detected. AI-specific checks are marked NA."
+  },
+  {
+    "check_id": "CARD-002",
+    "title": "No hardcoded credentials",
+    "status": "PASS",
+    "severity": "high",
+    "area": "Secrets",
+    "owasp": [
+      "LLM02"
+    ],
+    "ai_rmf": [
+      "GOVERN 6",
+      "MAP 4"
+    ],
+    "evidence": [],
+    "guidance": "Move keys to environment variables or a secret store; rotate any key that was committed. Values shown here are redacted at scan time.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-003",
+    "title": "Credentials sourced from environment",
+    "status": "NA",
+    "severity": "medium",
+    "area": "Secrets",
+    "owasp": [
+      "LLM02"
+    ],
+    "ai_rmf": [
+      "GOVERN 6"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-004",
+    "title": "Code-enforced cost ceiling",
+    "status": "NA",
+    "severity": "high",
+    "area": "Cost",
+    "owasp": [
+      "LLM10"
+    ],
+    "ai_rmf": [
+      "MAP 3",
+      "MANAGE 2"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-005",
+    "title": "Offline (mock) mode available",
+    "status": "NA",
+    "severity": "medium",
+    "area": "Cost",
+    "owasp": [
+      "LLM10"
+    ],
+    "ai_rmf": [
+      "MAP 3"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-006",
+    "title": "Human approval gate, no auto-execute",
+    "status": "NA",
+    "severity": "high",
+    "area": "Agency",
+    "owasp": [
+      "LLM06",
+      "LLM05"
+    ],
+    "ai_rmf": [
+      "GOVERN 3",
+      "MANAGE 1"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-007",
+    "title": "Independent verification of model output",
+    "status": "NA",
+    "severity": "high",
+    "area": "Accuracy",
+    "owasp": [
+      "LLM09"
+    ],
+    "ai_rmf": [
+      "MEASURE 2",
+      "MANAGE 2"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-008",
+    "title": "Structured output validated",
+    "status": "NA",
+    "severity": "medium",
+    "area": "Output handling",
+    "owasp": [
+      "LLM05"
+    ],
+    "ai_rmf": [
+      "MEASURE 2"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-009",
+    "title": "Prompt-injection detection",
+    "status": "NA",
+    "severity": "high",
+    "area": "Input handling",
+    "owasp": [
+      "LLM01"
+    ],
+    "ai_rmf": [
+      "MEASURE 2",
+      "MANAGE 2"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-010",
+    "title": "Tamper-evident audit log",
+    "status": "NA",
+    "severity": "medium",
+    "area": "Accountability",
+    "owasp": [],
+    "ai_rmf": [
+      "GOVERN 4",
+      "MEASURE 3"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-011",
+    "title": "Accuracy evaluation exists",
+    "status": "NA",
+    "severity": "high",
+    "area": "Accuracy",
+    "owasp": [
+      "LLM09"
+    ],
+    "ai_rmf": [
+      "MEASURE 1",
+      "MEASURE 2"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-012",
+    "title": "Drift / regression detection",
+    "status": "NA",
+    "severity": "low",
+    "area": "Monitoring",
+    "owasp": [
+      "LLM09"
+    ],
+    "ai_rmf": [
+      "MEASURE 3",
+      "MANAGE 4"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-013",
+    "title": "Model identifier declared",
+    "status": "NA",
+    "severity": "medium",
+    "area": "Provenance",
+    "owasp": [
+      "LLM03"
+    ],
+    "ai_rmf": [
+      "GOVERN 4",
+      "MAP 2"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-014",
+    "title": "Explicit timeouts on model calls",
+    "status": "NA",
+    "severity": "low",
+    "area": "Resilience",
+    "owasp": [
+      "LLM10"
+    ],
+    "ai_rmf": [
+      "MANAGE 2"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-015",
+    "title": "Tests and CI present",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Engineering",
+    "owasp": [],
+    "ai_rmf": [
+      "MEASURE 1",
+      "GOVERN 1"
+    ],
+    "evidence": [
+      "tests: yes",
+      "CI workflow: yes"
+    ],
+    "guidance": "Governance claims need a test that fails when the control is removed, and a CI job that runs it on every push.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-016",
+    "title": "CI runs without model API secrets",
+    "status": "PASS",
+    "severity": "low",
+    "area": "Cost",
+    "owasp": [
+      "LLM10"
+    ],
+    "ai_rmf": [
+      "MAP 3",
+      "GOVERN 6"
+    ],
+    "evidence": [],
+    "guidance": "Run CI in mock mode. If a live job is needed, isolate it behind a manual trigger with its own budget ceiling.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-017",
+    "title": "License and intended-use documentation",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Transparency",
+    "owasp": [],
+    "ai_rmf": [
+      "GOVERN 4",
+      "GOVERN 1"
+    ],
+    "evidence": [
+      "LICENSE: yes",
+      "README: yes",
+      "NOTICE: yes"
+    ],
+    "guidance": "State the license and, in the README's first paragraph, what the system is for and what it must not be used for. The card quotes that paragraph as the intended use.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-018",
+    "title": "Dependencies pinned",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Supply chain",
+    "owasp": [
+      "LLM03"
+    ],
+    "ai_rmf": [
+      "GOVERN 6"
+    ],
+    "evidence": [],
+    "guidance": "Pin every runtime dependency to an exact version (==) and bump deliberately; model SDKs change behaviour between minor versions.",
+    "note": "declared dependencies: 0 (stdlib-only)"
+  },
+  {
+    "check_id": "CARD-019",
+    "title": "Data minimisation stated or enforced",
+    "status": "NA",
+    "severity": "medium",
+    "area": "Data handling",
+    "owasp": [
+      "LLM02"
+    ],
+    "ai_rmf": [
+      "MAP 4",
+      "MANAGE 2"
+    ],
+    "evidence": [],
+    "guidance": "",
+    "note": ""
+  }
+]

@@ -1,0 +1,382 @@
+[
+  {
+    "check_id": "CARD-001",
+    "title": "LLM usage inventoried",
+    "status": "PASS",
+    "severity": "info",
+    "area": "Inventory",
+    "owasp": [],
+    "ai_rmf": [
+      "MAP 2"
+    ],
+    "evidence": [
+      "governed/providers.py:5 \u2014 import anthropic",
+      "governed/providers.py:26 \u2014 msg = self.client.messages.create(model=MODEL_NAME, max_tokens=400,"
+    ],
+    "guidance": "Every model call site should be known and listed. Cybwaycard derives this from imports, API hosts and call names; keep model access behind one module so the inventory stays short.",
+    "note": "providers: Anthropic; call sites: 1; AI files: 1"
+  },
+  {
+    "check_id": "CARD-002",
+    "title": "No hardcoded credentials",
+    "status": "PASS",
+    "severity": "high",
+    "area": "Secrets",
+    "owasp": [
+      "LLM02"
+    ],
+    "ai_rmf": [
+      "GOVERN 6",
+      "MAP 4"
+    ],
+    "evidence": [],
+    "guidance": "Move keys to environment variables or a secret store; rotate any key that was committed. Values shown here are redacted at scan time.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-003",
+    "title": "Credentials sourced from environment",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Secrets",
+    "owasp": [
+      "LLM02"
+    ],
+    "ai_rmf": [
+      "GOVERN 6"
+    ],
+    "evidence": [
+      "governed/providers.py:21 \u2014 ANTHROPIC_API_KEY"
+    ],
+    "guidance": "Keep it this way: no key literal in code, CI, or docs.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-004",
+    "title": "Code-enforced cost ceiling",
+    "status": "PASS",
+    "severity": "high",
+    "area": "Cost",
+    "owasp": [
+      "LLM10"
+    ],
+    "ai_rmf": [
+      "MAP 3",
+      "MANAGE 2"
+    ],
+    "evidence": [
+      "governed/budget.py:4 \u2014 class BudgetExceeded(RuntimeError):",
+      "governed/budget.py:8 \u2014 class BudgetCeiling:",
+      "governed/budget.py:9 \u2014 def __init__(self, max_usd: float):",
+      "governed/budget.py:10 \u2014 self.max_usd = max_usd",
+      "governed/budget.py:15 \u2014 return {\"projected_usd\": projected, \"would_exceed\": projected > self.max_usd}",
+      "governed/budget.py:19 \u2014 raise BudgetExceeded(\"ceiling reached\")",
+      "\u2026 3 more"
+    ],
+    "guidance": "Add a budget object that is charged BEFORE each network call and raises when the ceiling would be exceeded. A dashboard alert is not a control; code is.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-005",
+    "title": "Offline (mock) mode available",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Cost",
+    "owasp": [
+      "LLM10"
+    ],
+    "ai_rmf": [
+      "MAP 3"
+    ],
+    "evidence": [
+      "governed/budget.py:13 \u2014 def dry_run(self, estimated_cost_usd: float) -> dict:",
+      "governed/budget.py:18 \u2014 if self.dry_run(estimated_cost_usd)[\"would_exceed\"]:",
+      "governed/providers.py:10 \u2014 class MockProvider:"
+    ],
+    "guidance": "Provide a deterministic mock provider (or dry-run) as the default so the suite runs at $0 and live calls are an explicit opt-in.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-006",
+    "title": "Human approval gate, no auto-execute",
+    "status": "PASS",
+    "severity": "high",
+    "area": "Agency",
+    "owasp": [
+      "LLM06",
+      "LLM05"
+    ],
+    "ai_rmf": [
+      "GOVERN 3",
+      "MANAGE 1"
+    ],
+    "evidence": [
+      "governed/gate.py:6 \u2014 class ApprovalRequired(RuntimeError):",
+      "governed/gate.py:10 \u2014 class ApprovalGate:",
+      "governed/gate.py:15 \u2014 def approve(self, finding_id: str, approver: str) -> None:",
+      "governed/gate.py:21 \u2014 def reject(self, finding_id: str, approver: str, reason: str) -> None:"
+    ],
+    "guidance": "",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-007",
+    "title": "Independent verification of model output",
+    "status": "PASS",
+    "severity": "high",
+    "area": "Accuracy",
+    "owasp": [
+      "LLM09"
+    ],
+    "ai_rmf": [
+      "MEASURE 2",
+      "MANAGE 2"
+    ],
+    "evidence": [
+      "governed/agents.py:1 \u2014 \"\"\"Auditor drafts; an independent checker re-derives the truth.\"\"\"",
+      "governed/agents.py:38 \u2014 class CheckerAgent:",
+      "governed/agents.py:39 \u2014 \"\"\"Independent verification: re-derives ground_truth from the metadata itself.\"\"\"",
+      "governed/agents.py:41 \u2014 def adjudicate(self, draft: dict, metadata: str) -> str:",
+      "governed/agents.py:42 \u2014 ground_truth = \"high\" if \"grant dba\" in metadata.lower() else \"low\"",
+      "governed/agents.py:43 \u2014 return \"PASS\" if draft[\"risk\"] == ground_truth else \"REVIEW\""
+    ],
+    "guidance": "Re-derive the claim from source data (a rule engine, a second independent check) and adjudicate PASS / REVIEW / QUARANTINE. The model must never grade its own output.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-008",
+    "title": "Structured output validated",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Output handling",
+    "owasp": [
+      "LLM05"
+    ],
+    "ai_rmf": [
+      "MEASURE 2"
+    ],
+    "evidence": [
+      "governed/agents.py:33 \u2014 return validate_schema(json.loads(raw))",
+      "governed/agents.py:17 \u2014 def validate_schema(obj: dict) -> dict:",
+      "governed/agents.py:19 \u2014 raise ValueError(\"schema violation\")",
+      "governed/agents.py:33 \u2014 return validate_schema(json.loads(raw))"
+    ],
+    "guidance": "Ask for strict JSON, parse it inside try/except, and validate the shape (schema, allowed values) before anything downstream reads it.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-009",
+    "title": "Prompt-injection detection",
+    "status": "PASS",
+    "severity": "high",
+    "area": "Input handling",
+    "owasp": [
+      "LLM01"
+    ],
+    "ai_rmf": [
+      "MEASURE 2",
+      "MANAGE 2"
+    ],
+    "evidence": [
+      "governed/agents.py:6 \u2014 INJECTION_PATTERNS = [",
+      "governed/agents.py:28 \u2014 for rx in INJECTION_PATTERNS:"
+    ],
+    "guidance": "Scan untrusted input for published injection patterns before it reaches the prompt, plant a canary, and keep a red-team suite in the tests.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-010",
+    "title": "Tamper-evident audit log",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Accountability",
+    "owasp": [],
+    "ai_rmf": [
+      "GOVERN 4",
+      "MEASURE 3"
+    ],
+    "evidence": [
+      "governed/auditlog.py:15 \u2014 prev_hash = self._hash(self.entries[-1]) if self.entries else \"0\" * 64",
+      "governed/auditlog.py:16 \u2014 self.entries.append({\"event\": event, \"detail\": detail, \"prev_hash\": prev_hash})",
+      "governed/auditlog.py:18 \u2014 def verify_chain(self) -> bool:",
+      "governed/auditlog.py:21 \u2014 if e[\"prev_hash\"] != prev:"
+    ],
+    "guidance": "Hash-chain the log (each entry carries the SHA-256 of the previous) and write a manifest of run outputs so edits, deletions and reordering are detectable.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-011",
+    "title": "Accuracy evaluation exists",
+    "status": "PASS",
+    "severity": "high",
+    "area": "Accuracy",
+    "owasp": [
+      "LLM09"
+    ],
+    "ai_rmf": [
+      "MEASURE 1",
+      "MEASURE 2"
+    ],
+    "evidence": [
+      "governed/evalbench.py:1 \u2014 \"\"\"Precision / recall of the auditor against deterministic ground truth.\"\"\"",
+      "governed/evalbench.py:5 \u2014 precision = tp / (tp + fp) if tp + fp else 0.0",
+      "governed/evalbench.py:6 \u2014 recall = tp / (tp + fn) if tp + fn else 0.0",
+      "governed/evalbench.py:7 \u2014 f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0",
+      "governed/evalbench.py:8 \u2014 return {\"precision\": precision, \"recall\": recall, \"f1\": f1}",
+      "BENCHMARKS.md \u2014 benchmark artifact"
+    ],
+    "guidance": "Score the model against deterministic ground truth (precision / recall / F1 over N runs) and commit the numbers with the evidence that produced them.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-012",
+    "title": "Drift / regression detection",
+    "status": "PASS",
+    "severity": "low",
+    "area": "Monitoring",
+    "owasp": [
+      "LLM09"
+    ],
+    "ai_rmf": [
+      "MEASURE 3",
+      "MANAGE 4"
+    ],
+    "evidence": [
+      "governed/drift.py:1 \u2014 \"\"\"Drift: a case that passed before and fails now is a regression.\"\"\"",
+      "governed/drift.py:5 \u2014 regressed = [k for k, v in new.items() if v == \"FAIL\" and old.get(k) == \"PASS\"]",
+      "governed/drift.py:6 \u2014 return {\"regressed\": regressed, \"verdict\": \"REGRESSED\" if regressed else \"UNCHANGED\"}"
+    ],
+    "guidance": "Diff each run against the previous one and fail CI when a previously passing case regresses. Model updates change behaviour silently.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-013",
+    "title": "Model identifier declared",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Provenance",
+    "owasp": [
+      "LLM03"
+    ],
+    "ai_rmf": [
+      "GOVERN 4",
+      "MAP 2"
+    ],
+    "evidence": [
+      "governed/providers.py:7 \u2014 claude-sonnet-4-5"
+    ],
+    "guidance": "Name the exact model in code (env-overridable), so a card and a benchmark can say which model produced which numbers.",
+    "note": "models: claude-sonnet-4-5; environment override present"
+  },
+  {
+    "check_id": "CARD-014",
+    "title": "Explicit timeouts on model calls",
+    "status": "PASS",
+    "severity": "low",
+    "area": "Resilience",
+    "owasp": [
+      "LLM10"
+    ],
+    "ai_rmf": [
+      "MANAGE 2"
+    ],
+    "evidence": [
+      "governed/providers.py:21 \u2014 self.client = anthropic.Anthropic(api_key=os.environ[\"ANTHROPIC_API_KEY\"], timeout=30.0, max_retries=2)"
+    ],
+    "guidance": "Pass an explicit timeout and a bounded retry count to the client; SDK defaults are generous and invisible in a review.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-015",
+    "title": "Tests and CI present",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Engineering",
+    "owasp": [],
+    "ai_rmf": [
+      "MEASURE 1",
+      "GOVERN 1"
+    ],
+    "evidence": [
+      "tests: yes",
+      "CI workflow: yes"
+    ],
+    "guidance": "Governance claims need a test that fails when the control is removed, and a CI job that runs it on every push.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-016",
+    "title": "CI runs without model API secrets",
+    "status": "PASS",
+    "severity": "low",
+    "area": "Cost",
+    "owasp": [
+      "LLM10"
+    ],
+    "ai_rmf": [
+      "MAP 3",
+      "GOVERN 6"
+    ],
+    "evidence": [],
+    "guidance": "Run CI in mock mode. If a live job is needed, isolate it behind a manual trigger with its own budget ceiling.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-017",
+    "title": "License and intended-use documentation",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Transparency",
+    "owasp": [],
+    "ai_rmf": [
+      "GOVERN 4",
+      "GOVERN 1"
+    ],
+    "evidence": [
+      "LICENSE: yes",
+      "README: yes",
+      "NOTICE: yes"
+    ],
+    "guidance": "State the license and, in the README's first paragraph, what the system is for and what it must not be used for. The card quotes that paragraph as the intended use.",
+    "note": ""
+  },
+  {
+    "check_id": "CARD-018",
+    "title": "Dependencies pinned",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Supply chain",
+    "owasp": [
+      "LLM03"
+    ],
+    "ai_rmf": [
+      "GOVERN 6"
+    ],
+    "evidence": [],
+    "guidance": "Pin every runtime dependency to an exact version (==) and bump deliberately; model SDKs change behaviour between minor versions.",
+    "note": "declared dependencies: 1"
+  },
+  {
+    "check_id": "CARD-019",
+    "title": "Data minimisation stated or enforced",
+    "status": "PASS",
+    "severity": "medium",
+    "area": "Data handling",
+    "owasp": [
+      "LLM02"
+    ],
+    "ai_rmf": [
+      "MAP 4",
+      "MANAGE 2"
+    ],
+    "evidence": [
+      "README.md:9 \u2014 Only configuration metadata is ever sent to the model. Table data, credentials",
+      "README.md:10 \u2014 and personal data are never sent. Prompts are redacted before transmission.",
+      "governed/agents.py:12 \u2014 def redact(text: str) -> str:",
+      "governed/agents.py:14 \u2014 return re.sub(r\"sk-[A-Za-z0-9-]{8,}\", \"<redacted>\", text)",
+      "governed/agents.py:31 \u2014 raw = self.provider.complete(redact(metadata))"
+    ],
+    "guidance": "Write down exactly which fields reach the model (and which never do), and enforce it with a redaction / allow-list step in the prompt builder.",
+    "note": ""
+  }
+]

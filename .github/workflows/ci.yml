@@ -1,0 +1,32 @@
+name: CI (static, $0)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # No API keys anywhere in this job — the tool never calls a model. Pushes never cost money.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install (pinned dev deps)
+        run: pip install -e ".[dev]"
+      - name: Tests
+        run: pytest -q
+      - name: Repo controls (secret scan + policy lint)
+        run: cybwaycard controls --root .
+      - name: Self-scan (dogfood) + integrity verify
+        run: |
+          cybwaycard scan --root . --out runs/self --fail-on-gaps
+          cybwaycard verify --run-dir runs/self
+      - name: Sample scans (governed must pass, ungoverned must fail the gate)
+        run: |
+          cybwaycard init-sample --kind governed --out /tmp/governed
+          cybwaycard scan --root /tmp/governed --out runs/governed --fail-on-gaps
+          cybwaycard init-sample --kind ungoverned --out /tmp/ungoverned
+          if cybwaycard scan --root /tmp/ungoverned --out runs/ungoverned --fail-on-gaps; then echo "ungoverned sample unexpectedly passed"; exit 1; fi
+          cybwaycard card --run-dir runs/ungoverned --out /tmp/ungoverned-card.html

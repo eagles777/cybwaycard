@@ -1,0 +1,832 @@
+{
+  "root": "<self>",
+  "files_scanned": 35,
+  "python_files": 16,
+  "doc_files": 11,
+  "providers": {},
+  "call_sites": [],
+  "model_ids": [
+    {
+      "file": "src/cybwaycard/samples.py",
+      "line": 79,
+      "kind": "model_id",
+      "snippet": "claude-sonnet-4-5"
+    },
+    {
+      "file": "src/cybwaycard/samples.py",
+      "line": 242,
+      "kind": "model_id",
+      "snippet": "gpt-4o"
+    },
+    {
+      "file": "src/cybwaycard/signals.py",
+      "line": 69,
+      "kind": "model_id",
+      "snippet": "command-r"
+    }
+  ],
+  "model_env_override": [
+    {
+      "file": "src/cybwaycard/samples.py",
+      "line": 79,
+      "kind": "model_env",
+      "snippet": "MODEL_NAME = os.environ.get(\"MODEL_NAME\", \"claude-sonnet-4-5\")"
+    }
+  ],
+  "env_keys": [
+    {
+      "file": "src/cybwaycard/samples.py",
+      "line": 93,
+      "kind": "env_key",
+      "snippet": "ANTHROPIC_API_KEY"
+    },
+    {
+      "file": "tests/test_signals.py",
+      "line": 45,
+      "kind": "env_key",
+      "snippet": "OPENAI_API_KEY"
+    }
+  ],
+  "hardcoded_secrets": [],
+  "exec_primitives": [
+    {
+      "file": "make_evidence.py",
+      "line": 57,
+      "kind": "exec",
+      "snippet": "subprocess.run([\"git\", \"clone\", \"--quiet\", \"--depth\", \"1\", SIBLING, str(dest)], check=True)"
+    },
+    {
+      "file": "src/cybwaycard/samples.py",
+      "line": 250,
+      "kind": "exec",
+      "snippet": "subprocess.run(command, shell=True)"
+    }
+  ],
+  "markers": {
+    "chain": [
+      {
+        "file": "src/cybwaycard/auditlog.py",
+        "line": 5,
+        "kind": "chain",
+        "snippet": "breaks the chain and is detected by verify_chain()."
+      },
+      {
+        "file": "src/cybwaycard/auditlog.py",
+        "line": 43,
+        "kind": "chain",
+        "snippet": "\"prev_hash\": self._last_hash(),"
+      },
+      {
+        "file": "src/cybwaycard/auditlog.py",
+        "line": 54,
+        "kind": "chain",
+        "snippet": "def verify_chain(self) -> tuple[bool, str]:"
+      },
+      {
+        "file": "src/cybwaycard/auditlog.py",
+        "line": 58,
+        "kind": "chain",
+        "snippet": "if entry.get(\"prev_hash\") != prev:"
+      },
+      {
+        "file": "src/cybwaycard/auditlog.py",
+        "line": 59,
+        "kind": "chain",
+        "snippet": "return False, f\"chain broken at entry {i}: expected prev_hash {prev}\""
+      },
+      {
+        "file": "src/cybwaycard/cli.py",
+        "line": 67,
+        "kind": "chain",
+        "snippet": "log_ok, msg = AuditLog(Path(args.run_dir) / \"audit.log.jsonl\").verify_chain()"
+      },
+      {
+        "file": "src/cybwaycard/engine.py",
+        "line": 56,
+        "kind": "chain",
+        "snippet": "chain_ok, chain_msg = AuditLog(run_dir / \"audit.log.jsonl\").verify_chain()"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 184,
+        "kind": "chain",
+        "snippet": "prev_hash = self._hash(self.entries[-1]) if self.entries else \"0\" * 64"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 185,
+        "kind": "chain",
+        "snippet": "self.entries.append({\"event\": event, \"detail\": detail, \"prev_hash\": prev_hash})"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 187,
+        "kind": "chain",
+        "snippet": "def verify_chain(self) -> bool:"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 190,
+        "kind": "chain",
+        "snippet": "if e[\"prev_hash\"] != prev:"
+      }
+    ],
+    "json_parse": [
+      {
+        "file": "src/cybwaycard/auditlog.py",
+        "line": 36,
+        "kind": "json_parse",
+        "snippet": "return _entry_hash(json.loads(last_line))"
+      },
+      {
+        "file": "src/cybwaycard/auditlog.py",
+        "line": 52,
+        "kind": "json_parse",
+        "snippet": "return [json.loads(line) for line in self.path.read_text(encoding=\"utf-8\").splitlines() if line.strip()]"
+      },
+      {
+        "file": "src/cybwaycard/auditlog.py",
+        "line": 82,
+        "kind": "json_parse",
+        "snippet": "manifest = json.loads((run_dir / \"manifest.json\").read_text(encoding=\"utf-8\"))"
+      },
+      {
+        "file": "src/cybwaycard/cli.py",
+        "line": 60,
+        "kind": "json_parse",
+        "snippet": "card = json.loads((run_dir / \"card.json\").read_text(encoding=\"utf-8\"))"
+      },
+      {
+        "file": "src/cybwaycard/drift.py",
+        "line": 21,
+        "kind": "json_parse",
+        "snippet": "return json.loads(Path(path).read_text(encoding=\"utf-8\"))"
+      },
+      {
+        "file": "src/cybwaycard/engine.py",
+        "line": 58,
+        "kind": "json_parse",
+        "snippet": "sha = json.loads((run_dir / \"manifest.json\").read_text(encoding=\"utf-8\")).get(\"manifest_sha256\", \"\")"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 134,
+        "kind": "json_parse",
+        "snippet": "return validate_schema(json.loads(raw))"
+      }
+    ],
+    "eval": [
+      {
+        "file": "src/cybwaycard/card.py",
+        "line": 108,
+        "kind": "eval",
+        "snippet": "\"benchmark_files\": inv.benchmark_files,"
+      },
+      {
+        "file": "src/cybwaycard/card.py",
+        "line": 196,
+        "kind": "eval",
+        "snippet": "L.append(f\"- Evaluation markers in code: {ev['eval_markers']}; benchmark artifacts: {', '.join(ev['benchmark_files']) or 'none'}\")"
+      },
+      {
+        "file": "src/cybwaycard/card.py",
+        "line": 336,
+        "kind": "eval",
+        "snippet": "P.append(f\"<div><b>Evaluation markers</b>{ev['eval_markers']}</div><div><b>Benchmark artifacts</b>{_h(', '.join(ev['benchmark_files']) or '\u2026"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 234,
+        "kind": "eval",
+        "snippet": "ok = bool(ev) or bool(inv.benchmark_files)"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 237,
+        "kind": "eval",
+        "snippet": "guidance=\"Score the model against deterministic ground truth (precision / recall / F1 over N runs) \""
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 239,
+        "kind": "eval",
+        "snippet": "if inv.benchmark_files:"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 240,
+        "kind": "eval",
+        "snippet": "f.evidence += [f\"{b} \u2014 benchmark artifact\" for b in inv.benchmark_files[:3]]"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 266,
+        "kind": "eval",
+        "snippet": "guidance=\"Name the exact model in code (env-overridable), so a card and a benchmark can say which \""
+      },
+      {
+        "file": "src/cybwaycard/controls.py",
+        "line": 28,
+        "kind": "eval",
+        "snippet": "POLICY_FORBIDDEN_TERMS = [\"cis benchmark\", \"cis_benchmark\"]"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 36,
+        "kind": "eval",
+        "snippet": "\"BENCHMARKS.md\": \"# Benchmarks\\n\\nMock harness: precision 0.99 / recall 0.90 / F1 0.94 over 50 runs.\\n\","
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 195,
+        "kind": "eval",
+        "snippet": "\"governed/evalbench.py\": '''\"\"\"Precision / recall of the auditor against deterministic ground truth.\"\"\""
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 199,
+        "kind": "eval",
+        "snippet": "precision = tp / (tp + fp) if tp + fp else 0.0"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 200,
+        "kind": "eval",
+        "snippet": "recall = tp / (tp + fn) if tp + fn else 0.0"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 201,
+        "kind": "eval",
+        "snippet": "f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 202,
+        "kind": "eval",
+        "snippet": "return {\"precision\": precision, \"recall\": recall, \"f1\": f1}"
+      },
+      {
+        "file": "src/cybwaycard/signals.py",
+        "line": 166,
+        "kind": "eval",
+        "snippet": "benchmark_files: list = field(default_factory=list)"
+      },
+      {
+        "file": "src/cybwaycard/signals.py",
+        "line": 390,
+        "kind": "eval",
+        "snippet": "if \"benchmark\" in name and suffix in (\".md\", \".json\"):"
+      },
+      {
+        "file": "src/cybwaycard/signals.py",
+        "line": 391,
+        "kind": "eval",
+        "snippet": "inv.benchmark_files.append(rel)"
+      }
+    ],
+    "redaction": [
+      {
+        "file": "src/cybwaycard/card.py",
+        "line": 112,
+        "kind": "redaction",
+        "snippet": "\"redaction_markers\": len(inv.markers.get(\"redaction\", [])),"
+      },
+      {
+        "file": "src/cybwaycard/card.py",
+        "line": 197,
+        "kind": "redaction",
+        "snippet": "L.append(f\"- Data-handling statements in docs: {len(dh['statements'])}; redaction markers in code: {dh['redaction_markers']}\")"
+      },
+      {
+        "file": "src/cybwaycard/card.py",
+        "line": 337,
+        "kind": "redaction",
+        "snippet": "P.append(f\"<div><b>Data statements in docs</b>{len(dh['statements'])}</div><div><b>Redaction markers</b>{dh['redaction_markers']}</div>\")"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 103,
+        "kind": "redaction",
+        "snippet": "\"Values shown here are redacted at scan time.\")"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 341,
+        "kind": "redaction",
+        "snippet": "\"\"\"CARD-019 \u2014 What is (and is not) sent to the model is stated, or redaction exists in code.\"\"\""
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 343,
+        "kind": "redaction",
+        "snippet": "return Finding(\"CARD-019\", \"Data minimisation stated or enforced\", NA, \"medium\", \"Data handling\","
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 346,
+        "kind": "redaction",
+        "snippet": "code = _m(inv, \"redaction\")"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 348,
+        "kind": "redaction",
+        "snippet": "return Finding(\"CARD-019\", \"Data minimisation stated or enforced\", PASS if ok else FAIL, \"medium\", \"Data handling\","
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 351,
+        "kind": "redaction",
+        "snippet": "\"with a redaction / allow-list step in the prompt builder.\")"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 32,
+        "kind": "redaction",
+        "snippet": "and personal data are never sent. Prompts are redacted before transmission."
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 113,
+        "kind": "redaction",
+        "snippet": "def redact(text: str) -> str:"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 115,
+        "kind": "redaction",
+        "snippet": "return re.sub(r\"sk-[A-Za-z0-9-]{8,}\", \"<redacted>\", text)"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 132,
+        "kind": "redaction",
+        "snippet": "raw = self.provider.complete(redact(metadata))"
+      },
+      {
+        "file": "src/cybwaycard/signals.py",
+        "line": 113,
+        "kind": "redaction",
+        "snippet": "r\"(?i)(never (?:sent|sends|send|leaves|shared)|metadata only|no (?:pii|personal data|customer data)|\""
+      },
+      {
+        "file": "src/cybwaycard/signals.py",
+        "line": 115,
+        "kind": "redaction",
+        "snippet": "r\"data minimi[sz]ation|redact\\w*|anonymi[sz]\\w*)\""
+      },
+      {
+        "file": "src/cybwaycard/signals.py",
+        "line": 208,
+        "kind": "redaction",
+        "snippet": "def redact(line: str) -> str:"
+      },
+      {
+        "file": "src/cybwaycard/signals.py",
+        "line": 210,
+        "kind": "redaction",
+        "snippet": "out = _GENERIC_VALUE_RE.sub(lambda m: m.group(1) + m.group(2) + \"<redacted>\", line)"
+      },
+      {
+        "file": "src/cybwaycard/signals.py",
+        "line": 212,
+        "kind": "redaction",
+        "snippet": "out = rx.sub(\"<redacted>\", out)"
+      },
+      {
+        "file": "src/cybwaycard/signals.py",
+        "line": 217,
+        "kind": "redaction",
+        "snippet": "s = redact(line.strip())"
+      }
+    ],
+    "budget": [
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 131,
+        "kind": "budget",
+        "snippet": "ev = _m(inv, \"budget\")"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 134,
+        "kind": "budget",
+        "snippet": "guidance=\"Add a budget object that is charged BEFORE each network call and raises when the ceiling \""
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 309,
+        "kind": "budget",
+        "snippet": "\"its own budget ceiling.\")"
+      },
+      {
+        "file": "src/cybwaycard/drift.py",
+        "line": 4,
+        "kind": "budget",
+        "snippet": "- What got WORSE (a control that passed now fails \u2014 e.g. the budget ceiling was deleted)?"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 52,
+        "kind": "budget",
+        "snippet": "\"governed/budget.py\": '''\"\"\"Code-enforced cost ceiling, charged BEFORE every paid call.\"\"\""
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 55,
+        "kind": "budget",
+        "snippet": "class BudgetExceeded(RuntimeError):"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 59,
+        "kind": "budget",
+        "snippet": "class BudgetCeiling:"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 60,
+        "kind": "budget",
+        "snippet": "def __init__(self, max_usd: float):"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 61,
+        "kind": "budget",
+        "snippet": "self.max_usd = max_usd"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 66,
+        "kind": "budget",
+        "snippet": "return {\"projected_usd\": projected, \"would_exceed\": projected > self.max_usd}"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 70,
+        "kind": "budget",
+        "snippet": "raise BudgetExceeded(\"ceiling reached\")"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 90,
+        "kind": "budget",
+        "snippet": "def __init__(self, budget, opt_in: bool = False):"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 94,
+        "kind": "budget",
+        "snippet": "self.budget = budget"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 97,
+        "kind": "budget",
+        "snippet": "self.budget.charge(0.002)"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 215,
+        "kind": "budget",
+        "snippet": "\"tests/test_core.py\": '''from governed.budget import BudgetCeiling, BudgetExceeded"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 219,
+        "kind": "budget",
+        "snippet": "b = BudgetCeiling(0.001)"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 223,
+        "kind": "budget",
+        "snippet": "except BudgetExceeded:"
+      }
+    ],
+    "checker": [
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 179,
+        "kind": "checker",
+        "snippet": "ev = _m(inv, \"checker\")"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 183,
+        "kind": "checker",
+        "snippet": "\"adjudicate PASS / REVIEW / QUARANTINE. The model must never grade its own output.\")"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 102,
+        "kind": "checker",
+        "snippet": "\"governed/agents.py\": '''\"\"\"Auditor drafts; an independent checker re-derives the truth.\"\"\""
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 139,
+        "kind": "checker",
+        "snippet": "class CheckerAgent:"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 140,
+        "kind": "checker",
+        "snippet": "\"\"\"Independent verification: re-derives ground_truth from the metadata itself.\"\"\""
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 142,
+        "kind": "checker",
+        "snippet": "def adjudicate(self, draft: dict, metadata: str) -> str:"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 143,
+        "kind": "checker",
+        "snippet": "ground_truth = \"high\" if \"grant dba\" in metadata.lower() else \"low\""
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 144,
+        "kind": "checker",
+        "snippet": "return \"PASS\" if draft[\"risk\"] == ground_truth else \"REVIEW\""
+      }
+    ],
+    "validation": [
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 188,
+        "kind": "validation",
+        "snippet": "\"\"\"CARD-008 \u2014 Model output is parsed and validated, not trusted as-is.\"\"\""
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 190,
+        "kind": "validation",
+        "snippet": "return Finding(\"CARD-008\", \"Structured output validated\", NA, \"medium\", \"Output handling\","
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 195,
+        "kind": "validation",
+        "snippet": "return Finding(\"CARD-008\", \"Structured output validated\", PASS if ok else FAIL, \"medium\", \"Output handling\","
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 197,
+        "kind": "validation",
+        "snippet": "guidance=\"Ask for strict JSON, parse it inside try/except, and validate the shape (schema, \""
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 118,
+        "kind": "validation",
+        "snippet": "def validate_schema(obj: dict) -> dict:"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 120,
+        "kind": "validation",
+        "snippet": "raise ValueError(\"schema violation\")"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 134,
+        "kind": "validation",
+        "snippet": "return validate_schema(json.loads(raw))"
+      }
+    ],
+    "injection": [
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 211,
+        "kind": "injection",
+        "snippet": "\"plant a canary, and keep a red-team suite in the tests.\")"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 107,
+        "kind": "injection",
+        "snippet": "INJECTION_PATTERNS = ["
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 129,
+        "kind": "injection",
+        "snippet": "for rx in INJECTION_PATTERNS:"
+      }
+    ],
+    "drift": [
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 245,
+        "kind": "drift",
+        "snippet": "def card_012_drift_detection(inv: Inventory) -> Finding:"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 246,
+        "kind": "drift",
+        "snippet": "\"\"\"CARD-012 \u2014 Regression / drift between runs is detected.\"\"\""
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 248,
+        "kind": "drift",
+        "snippet": "return Finding(\"CARD-012\", \"Drift / regression detection\", NA, \"low\", \"Monitoring\","
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 250,
+        "kind": "drift",
+        "snippet": "ev = _m(inv, \"drift\")"
+      },
+      {
+        "file": "src/cybwaycard/checks.py",
+        "line": 251,
+        "kind": "drift",
+        "snippet": "return Finding(\"CARD-012\", \"Drift / regression detection\", PASS if ev else FAIL, \"low\", \"Monitoring\","
+      },
+      {
+        "file": "src/cybwaycard/cli.py",
+        "line": 38,
+        "kind": "drift",
+        "snippet": "p_drift = sub.add_parser(\"drift\", help=\"Diff governance posture between two runs (exit 1 on regression)\")"
+      },
+      {
+        "file": "src/cybwaycard/cli.py",
+        "line": 39,
+        "kind": "drift",
+        "snippet": "p_drift.add_argument(\"--old\", required=True, help=\"Previous run's findings.json\")"
+      },
+      {
+        "file": "src/cybwaycard/cli.py",
+        "line": 40,
+        "kind": "drift",
+        "snippet": "p_drift.add_argument(\"--new\", required=True, help=\"Latest run's findings.json\")"
+      },
+      {
+        "file": "src/cybwaycard/cli.py",
+        "line": 73,
+        "kind": "drift",
+        "snippet": "if args.command == \"drift\":"
+      },
+      {
+        "file": "src/cybwaycard/cli.py",
+        "line": 74,
+        "kind": "drift",
+        "snippet": "from .drift import diff_cards, load_findings"
+      },
+      {
+        "file": "src/cybwaycard/cli.py",
+        "line": 77,
+        "kind": "drift",
+        "snippet": "return 0 if d[\"verdict\"] != \"REGRESSED\" else 1"
+      },
+      {
+        "file": "src/cybwaycard/drift.py",
+        "line": 1,
+        "kind": "drift",
+        "snippet": "\"\"\"GOVERNANCE DRIFT: diff two cards' check results."
+      },
+      {
+        "file": "src/cybwaycard/drift.py",
+        "line": 36,
+        "kind": "drift",
+        "snippet": "regressed = sorted((new_fail - old_fail) & common)"
+      },
+      {
+        "file": "src/cybwaycard/drift.py",
+        "line": 39,
+        "kind": "drift",
+        "snippet": "\"regressed\": regressed,"
+      },
+      {
+        "file": "src/cybwaycard/drift.py",
+        "line": 45,
+        "kind": "drift",
+        "snippet": "\"verdict\": \"REGRESSED\" if regressed else \"IMPROVED\" if fixed else \"UNCHANGED\","
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 208,
+        "kind": "drift",
+        "snippet": "\"governed/drift.py\": '''\"\"\"Drift: a case that passed before and fails now is a regression.\"\"\""
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 212,
+        "kind": "drift",
+        "snippet": "regressed = [k for k, v in new.items() if v == \"FAIL\" and old.get(k) == \"PASS\"]"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 213,
+        "kind": "drift",
+        "snippet": "return {\"regressed\": regressed, \"verdict\": \"REGRESSED\" if regressed else \"UNCHANGED\"}"
+      }
+    ],
+    "mock": [
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 64,
+        "kind": "mock",
+        "snippet": "def dry_run(self, estimated_cost_usd: float) -> dict:"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 69,
+        "kind": "mock",
+        "snippet": "if self.dry_run(estimated_cost_usd)[\"would_exceed\"]:"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 82,
+        "kind": "mock",
+        "snippet": "class MockProvider:"
+      }
+    ],
+    "timeout": [
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 93,
+        "kind": "timeout",
+        "snippet": "self.client = anthropic.Anthropic(api_key=os.environ[\"ANTHROPIC_API_KEY\"], timeout=30.0, max_retries=2)"
+      }
+    ],
+    "gate": [
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 151,
+        "kind": "gate",
+        "snippet": "class ApprovalRequired(RuntimeError):"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 155,
+        "kind": "gate",
+        "snippet": "class ApprovalGate:"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 160,
+        "kind": "gate",
+        "snippet": "def approve(self, finding_id: str, approver: str) -> None:"
+      },
+      {
+        "file": "src/cybwaycard/samples.py",
+        "line": 166,
+        "kind": "gate",
+        "snippet": "def reject(self, finding_id: str, approver: str, reason: str) -> None:"
+      }
+    ]
+  },
+  "ai_files": [],
+  "docs_data_statement": [
+    {
+      "file": "BACKLOG.md",
+      "line": 5,
+      "kind": "data_statement",
+      "snippet": "- [x] Signal extraction (AST imports/calls + line patterns, file:line evidence, redaction at capture)"
+    },
+    {
+      "file": "docs/NIST_AI_RMF_MAPPING.md",
+      "line": 31,
+      "kind": "data_statement",
+      "snippet": "| MAP 4 \u2014 Risks to individuals and data | CARD-019 requires a written data-minimisation statement or redaction in code; CARD-002 detects credential literals. The scanner redacts any credential-shaped\u2026"
+    },
+    {
+      "file": "LEGAL.md",
+      "line": 33,
+      "kind": "data_statement",
+      "snippet": "the scanner finds in a target is redacted before it is written to any output."
+    },
+    {
+      "file": "README.md",
+      "line": 43,
+      "kind": "data_statement",
+      "snippet": "| Handling | Structured output validated \u00b7 prompt-injection detection \u00b7 data minimisation stated or enforced |"
+    },
+    {
+      "file": "README.md",
+      "line": 97,
+      "kind": "data_statement",
+      "snippet": "- **Synthetic data only.** The sample codebases are fake; the sample's \"API key\" is assembled at runtime so no credential-shaped literal exists in source, and any credential the scanner finds is reda\u2026"
+    }
+  ],
+  "intended_use": "An open-source AI System Card &amp; AI Risk Register generator \u2014 from code, not from promises. Point it at any Python codebase that calls a model. It reads the code (never runs it, never calls a model) and writes a model-card-style document plus an OWASP-LLM risk register, with a file:line citation behind every claim.",
+  "has_readme": true,
+  "has_license": true,
+  "has_notice": true,
+  "has_tests": true,
+  "has_ci": true,
+  "ci_model_secrets": [],
+  "benchmark_files": [],
+  "unpinned_deps": [],
+  "deps_declared": 0,
+  "parse_errors": [],
+  "uses_ai": false
+}

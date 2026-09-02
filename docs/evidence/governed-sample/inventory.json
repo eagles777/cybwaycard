@@ -1,0 +1,371 @@
+{
+  "root": "<governed-sample>",
+  "files_scanned": 15,
+  "python_files": 9,
+  "doc_files": 2,
+  "providers": {
+    "Anthropic": [
+      {
+        "file": "governed/providers.py",
+        "line": 5,
+        "kind": "import",
+        "snippet": "import anthropic"
+      }
+    ]
+  },
+  "call_sites": [
+    {
+      "file": "governed/providers.py",
+      "line": 26,
+      "kind": "self.client.messages.create",
+      "snippet": "msg = self.client.messages.create(model=MODEL_NAME, max_tokens=400,"
+    }
+  ],
+  "model_ids": [
+    {
+      "file": "governed/providers.py",
+      "line": 7,
+      "kind": "model_id",
+      "snippet": "claude-sonnet-4-5"
+    }
+  ],
+  "model_env_override": [
+    {
+      "file": "governed/providers.py",
+      "line": 7,
+      "kind": "model_env",
+      "snippet": "MODEL_NAME = os.environ.get(\"MODEL_NAME\", \"claude-sonnet-4-5\")"
+    }
+  ],
+  "env_keys": [
+    {
+      "file": "governed/providers.py",
+      "line": 21,
+      "kind": "env_key",
+      "snippet": "ANTHROPIC_API_KEY"
+    }
+  ],
+  "hardcoded_secrets": [],
+  "exec_primitives": [],
+  "markers": {
+    "checker": [
+      {
+        "file": "governed/agents.py",
+        "line": 1,
+        "kind": "checker",
+        "snippet": "\"\"\"Auditor drafts; an independent checker re-derives the truth.\"\"\""
+      },
+      {
+        "file": "governed/agents.py",
+        "line": 38,
+        "kind": "checker",
+        "snippet": "class CheckerAgent:"
+      },
+      {
+        "file": "governed/agents.py",
+        "line": 39,
+        "kind": "checker",
+        "snippet": "\"\"\"Independent verification: re-derives ground_truth from the metadata itself.\"\"\""
+      },
+      {
+        "file": "governed/agents.py",
+        "line": 41,
+        "kind": "checker",
+        "snippet": "def adjudicate(self, draft: dict, metadata: str) -> str:"
+      },
+      {
+        "file": "governed/agents.py",
+        "line": 42,
+        "kind": "checker",
+        "snippet": "ground_truth = \"high\" if \"grant dba\" in metadata.lower() else \"low\""
+      },
+      {
+        "file": "governed/agents.py",
+        "line": 43,
+        "kind": "checker",
+        "snippet": "return \"PASS\" if draft[\"risk\"] == ground_truth else \"REVIEW\""
+      }
+    ],
+    "injection": [
+      {
+        "file": "governed/agents.py",
+        "line": 6,
+        "kind": "injection",
+        "snippet": "INJECTION_PATTERNS = ["
+      },
+      {
+        "file": "governed/agents.py",
+        "line": 28,
+        "kind": "injection",
+        "snippet": "for rx in INJECTION_PATTERNS:"
+      }
+    ],
+    "redaction": [
+      {
+        "file": "governed/agents.py",
+        "line": 12,
+        "kind": "redaction",
+        "snippet": "def redact(text: str) -> str:"
+      },
+      {
+        "file": "governed/agents.py",
+        "line": 14,
+        "kind": "redaction",
+        "snippet": "return re.sub(r\"sk-[A-Za-z0-9-]{8,}\", \"<redacted>\", text)"
+      },
+      {
+        "file": "governed/agents.py",
+        "line": 31,
+        "kind": "redaction",
+        "snippet": "raw = self.provider.complete(redact(metadata))"
+      }
+    ],
+    "validation": [
+      {
+        "file": "governed/agents.py",
+        "line": 17,
+        "kind": "validation",
+        "snippet": "def validate_schema(obj: dict) -> dict:"
+      },
+      {
+        "file": "governed/agents.py",
+        "line": 19,
+        "kind": "validation",
+        "snippet": "raise ValueError(\"schema violation\")"
+      },
+      {
+        "file": "governed/agents.py",
+        "line": 33,
+        "kind": "validation",
+        "snippet": "return validate_schema(json.loads(raw))"
+      }
+    ],
+    "json_parse": [
+      {
+        "file": "governed/agents.py",
+        "line": 33,
+        "kind": "json_parse",
+        "snippet": "return validate_schema(json.loads(raw))"
+      }
+    ],
+    "chain": [
+      {
+        "file": "governed/auditlog.py",
+        "line": 15,
+        "kind": "chain",
+        "snippet": "prev_hash = self._hash(self.entries[-1]) if self.entries else \"0\" * 64"
+      },
+      {
+        "file": "governed/auditlog.py",
+        "line": 16,
+        "kind": "chain",
+        "snippet": "self.entries.append({\"event\": event, \"detail\": detail, \"prev_hash\": prev_hash})"
+      },
+      {
+        "file": "governed/auditlog.py",
+        "line": 18,
+        "kind": "chain",
+        "snippet": "def verify_chain(self) -> bool:"
+      },
+      {
+        "file": "governed/auditlog.py",
+        "line": 21,
+        "kind": "chain",
+        "snippet": "if e[\"prev_hash\"] != prev:"
+      }
+    ],
+    "budget": [
+      {
+        "file": "governed/budget.py",
+        "line": 4,
+        "kind": "budget",
+        "snippet": "class BudgetExceeded(RuntimeError):"
+      },
+      {
+        "file": "governed/budget.py",
+        "line": 8,
+        "kind": "budget",
+        "snippet": "class BudgetCeiling:"
+      },
+      {
+        "file": "governed/budget.py",
+        "line": 9,
+        "kind": "budget",
+        "snippet": "def __init__(self, max_usd: float):"
+      },
+      {
+        "file": "governed/budget.py",
+        "line": 10,
+        "kind": "budget",
+        "snippet": "self.max_usd = max_usd"
+      },
+      {
+        "file": "governed/budget.py",
+        "line": 15,
+        "kind": "budget",
+        "snippet": "return {\"projected_usd\": projected, \"would_exceed\": projected > self.max_usd}"
+      },
+      {
+        "file": "governed/budget.py",
+        "line": 19,
+        "kind": "budget",
+        "snippet": "raise BudgetExceeded(\"ceiling reached\")"
+      },
+      {
+        "file": "governed/providers.py",
+        "line": 18,
+        "kind": "budget",
+        "snippet": "def __init__(self, budget, opt_in: bool = False):"
+      },
+      {
+        "file": "governed/providers.py",
+        "line": 22,
+        "kind": "budget",
+        "snippet": "self.budget = budget"
+      },
+      {
+        "file": "governed/providers.py",
+        "line": 25,
+        "kind": "budget",
+        "snippet": "self.budget.charge(0.002)"
+      }
+    ],
+    "mock": [
+      {
+        "file": "governed/budget.py",
+        "line": 13,
+        "kind": "mock",
+        "snippet": "def dry_run(self, estimated_cost_usd: float) -> dict:"
+      },
+      {
+        "file": "governed/budget.py",
+        "line": 18,
+        "kind": "mock",
+        "snippet": "if self.dry_run(estimated_cost_usd)[\"would_exceed\"]:"
+      },
+      {
+        "file": "governed/providers.py",
+        "line": 10,
+        "kind": "mock",
+        "snippet": "class MockProvider:"
+      }
+    ],
+    "drift": [
+      {
+        "file": "governed/drift.py",
+        "line": 1,
+        "kind": "drift",
+        "snippet": "\"\"\"Drift: a case that passed before and fails now is a regression.\"\"\""
+      },
+      {
+        "file": "governed/drift.py",
+        "line": 5,
+        "kind": "drift",
+        "snippet": "regressed = [k for k, v in new.items() if v == \"FAIL\" and old.get(k) == \"PASS\"]"
+      },
+      {
+        "file": "governed/drift.py",
+        "line": 6,
+        "kind": "drift",
+        "snippet": "return {\"regressed\": regressed, \"verdict\": \"REGRESSED\" if regressed else \"UNCHANGED\"}"
+      }
+    ],
+    "eval": [
+      {
+        "file": "governed/evalbench.py",
+        "line": 1,
+        "kind": "eval",
+        "snippet": "\"\"\"Precision / recall of the auditor against deterministic ground truth.\"\"\""
+      },
+      {
+        "file": "governed/evalbench.py",
+        "line": 5,
+        "kind": "eval",
+        "snippet": "precision = tp / (tp + fp) if tp + fp else 0.0"
+      },
+      {
+        "file": "governed/evalbench.py",
+        "line": 6,
+        "kind": "eval",
+        "snippet": "recall = tp / (tp + fn) if tp + fn else 0.0"
+      },
+      {
+        "file": "governed/evalbench.py",
+        "line": 7,
+        "kind": "eval",
+        "snippet": "f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0"
+      },
+      {
+        "file": "governed/evalbench.py",
+        "line": 8,
+        "kind": "eval",
+        "snippet": "return {\"precision\": precision, \"recall\": recall, \"f1\": f1}"
+      }
+    ],
+    "gate": [
+      {
+        "file": "governed/gate.py",
+        "line": 6,
+        "kind": "gate",
+        "snippet": "class ApprovalRequired(RuntimeError):"
+      },
+      {
+        "file": "governed/gate.py",
+        "line": 10,
+        "kind": "gate",
+        "snippet": "class ApprovalGate:"
+      },
+      {
+        "file": "governed/gate.py",
+        "line": 15,
+        "kind": "gate",
+        "snippet": "def approve(self, finding_id: str, approver: str) -> None:"
+      },
+      {
+        "file": "governed/gate.py",
+        "line": 21,
+        "kind": "gate",
+        "snippet": "def reject(self, finding_id: str, approver: str, reason: str) -> None:"
+      }
+    ],
+    "timeout": [
+      {
+        "file": "governed/providers.py",
+        "line": 21,
+        "kind": "timeout",
+        "snippet": "self.client = anthropic.Anthropic(api_key=os.environ[\"ANTHROPIC_API_KEY\"], timeout=30.0, max_retries=2)"
+      }
+    ]
+  },
+  "ai_files": [
+    "governed/providers.py"
+  ],
+  "docs_data_statement": [
+    {
+      "file": "README.md",
+      "line": 9,
+      "kind": "data_statement",
+      "snippet": "Only configuration metadata is ever sent to the model. Table data, credentials"
+    },
+    {
+      "file": "README.md",
+      "line": 10,
+      "kind": "data_statement",
+      "snippet": "and personal data are never sent. Prompts are redacted before transmission."
+    }
+  ],
+  "intended_use": "A tiny governed AI client used as a Cybwaycard fixture. It drafts change summaries from configuration metadata using a hosted model, verifies every draft independently, and never acts without a logged human decision.",
+  "has_readme": true,
+  "has_license": true,
+  "has_notice": true,
+  "has_tests": true,
+  "has_ci": true,
+  "ci_model_secrets": [],
+  "benchmark_files": [
+    "BENCHMARKS.md"
+  ],
+  "unpinned_deps": [],
+  "deps_declared": 1,
+  "parse_errors": [],
+  "uses_ai": true
+}

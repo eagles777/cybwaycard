@@ -1,0 +1,23 @@
+{
+  "files": {
+    "audit.log.jsonl": "12209ed2612f0e09e3c51ddd467b922599f15e9a4eaac106b822960fd0535ef7",
+    "card.json": "919e9ff49d98dc0a512c0438cd2cb8350413a9f6a939bd6f771fa1c93c272565",
+    "card.md": "7594dfe148baa0948141aed16034fc8f5367826c79929126255154ec93e74c15",
+    "findings.json": "de412a57c91ccb43c6ed2dfe6271af705e003fdbdc8c00727d23df77e2560987",
+    "inventory.json": "38e96a338ea5463a8eafa3a31db24ddb8f90ac18b211d3deed959ab7f573a795"
+  },
+  "generated_at": "2026-09-02T00:00:00+00:00",
+  "manifest_sha256": "f61e24f67594b5bef194db7ae773bd5b0b123ea36b66e23491e9f83d7f137112",
+  "summary": {
+    "cost_usd": 0,
+    "fail": 0,
+    "mode": "static",
+    "na": 14,
+    "pass": 5,
+    "score_pct": 100,
+    "subject": "cybwaycard",
+    "total": 19,
+    "uses_ai": false,
+    "verdict": "NO MODEL USAGE DETECTED"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "files": {
+    "audit.log.jsonl": "891bc9df07cb92bfa59ebb7c362557a0853b14ed2e62c198a3cdfdf8ba7003a2",
+    "card.json": "2ca688ae46abdc75e66b59765eb916c5b9e078195276883e2896bfa07f688867",
+    "card.md": "582126a02563a5b50148b9bfd303939c199fac4b1e607b88512848e3967196b0",
+    "findings.json": "461b3fa0e839c70fd800eafd3872b6fb3686f35b968dd067ec9f530d97002247",
+    "inventory.json": "5bb4074909db29d3557258a811a7c4318e4eb1b2446686547a6a5ebb232fca1f"
+  },
+  "generated_at": "2026-09-02T00:00:00+00:00",
+  "manifest_sha256": "7e5df72063510f8af508fab5dc1d41f714b8d801faffb963778ec8a43d0a06a9",
+  "summary": {
+    "cost_usd": 0,
+    "fail": 0,
+    "mode": "static",
+    "na": 0,
+    "pass": 19,
+    "score_pct": 100,
+    "subject": "Cybwaydb (sibling project)",
+    "total": 19,
+    "uses_ai": true,
+    "verdict": "GOVERNED"
+  }
+}

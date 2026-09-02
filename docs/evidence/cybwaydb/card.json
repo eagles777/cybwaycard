@@ -1,0 +1,657 @@
+{
+  "card_format": "AI System Card + AI Risk Register (cybwaycard)",
+  "generator": {
+    "name": "cybwaycard",
+    "version": "0.1.0",
+    "mode": "static analysis, offline, no model call, $0"
+  },
+  "generated_at": "2026-09-02T00:00:00+00:00",
+  "subject": {
+    "name": "Cybwaydb (sibling project)",
+    "files_scanned": 48,
+    "python_files": 26,
+    "doc_files": 9,
+    "parse_errors": []
+  },
+  "system_details": {
+    "uses_ai": true,
+    "providers": {
+      "Google Gemini": 1
+    },
+    "call_sites": [],
+    "model_ids": [
+      "gemini-flash-lite-latest"
+    ],
+    "model_env_override": true,
+    "ai_files": [
+      "src/cybwaydb/providers.py"
+    ],
+    "execution_primitives": 0
+  },
+  "intended_use": "This directory contains the **actual output artifacts** from the one live-model demo run (Google Gemini `gemini-flash-lite-latest`), scored against the deterministic rule engine as ground truth. It is committed as verifiable proof of the published accuracy numbers.",
+  "summary": {
+    "verdict": "GOVERNED",
+    "score_pct": 100,
+    "pass": 19,
+    "fail": 0,
+    "na": 0,
+    "total": 19,
+    "high_fails": 0,
+    "medium_fails": 0,
+    "low_fails": 0
+  },
+  "checks": [
+    {
+      "check_id": "CARD-001",
+      "title": "LLM usage inventoried",
+      "status": "PASS",
+      "severity": "info",
+      "area": "Inventory",
+      "owasp": [],
+      "ai_rmf": [
+        "MAP 2"
+      ],
+      "evidence": [
+        "src/cybwaydb/providers.py:98 \u2014 url = (f\"https://generativelanguage.googleapis.com/v1beta/models/\""
+      ],
+      "guidance": "Every model call site should be known and listed. Cybwaycard derives this from imports, API hosts and call names; keep model access behind one module so the inventory stays short.",
+      "note": "providers: Google Gemini; call sites: 0; AI files: 1"
+    },
+    {
+      "check_id": "CARD-002",
+      "title": "No hardcoded credentials",
+      "status": "PASS",
+      "severity": "high",
+      "area": "Secrets",
+      "owasp": [
+        "LLM02"
+      ],
+      "ai_rmf": [
+        "GOVERN 6",
+        "MAP 4"
+      ],
+      "evidence": [],
+      "guidance": "Move keys to environment variables or a secret store; rotate any key that was committed. Values shown here are redacted at scan time.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-003",
+      "title": "Credentials sourced from environment",
+      "status": "PASS",
+      "severity": "medium",
+      "area": "Secrets",
+      "owasp": [
+        "LLM02"
+      ],
+      "ai_rmf": [
+        "GOVERN 6"
+      ],
+      "evidence": [
+        "src/cybwaydb/providers.py:79 \u2014 GOOGLE_API_KEY",
+        "src/cybwaydb/providers.py:99 \u2014 GOOGLE_API_KEY",
+        "src/cybwaydb/providers.py:116 \u2014 ANTHROPIC_API_KEY"
+      ],
+      "guidance": "Keep it this way: no key literal in code, CI, or docs.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-004",
+      "title": "Code-enforced cost ceiling",
+      "status": "PASS",
+      "severity": "high",
+      "area": "Cost",
+      "owasp": [
+        "LLM10"
+      ],
+      "ai_rmf": [
+        "MAP 3",
+        "MANAGE 2"
+      ],
+      "evidence": [
+        "src/cybwaydb/budget.py:1 \u2014 \"\"\"Code-enforced budget ceiling for any paid LLM call.",
+        "src/cybwaydb/budget.py:10 \u2014 class BudgetExceeded(RuntimeError):",
+        "src/cybwaydb/budget.py:14 \u2014 class BudgetCeiling:",
+        "src/cybwaydb/budget.py:15 \u2014 def __init__(self, max_usd: float):",
+        "src/cybwaydb/budget.py:16 \u2014 if max_usd < 0:",
+        "src/cybwaydb/budget.py:17 \u2014 raise ValueError(\"budget must be >= 0\")",
+        "\u2026 29 more"
+      ],
+      "guidance": "Add a budget object that is charged BEFORE each network call and raises when the ceiling would be exceeded. A dashboard alert is not a control; code is.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-005",
+      "title": "Offline (mock) mode available",
+      "status": "PASS",
+      "severity": "medium",
+      "area": "Cost",
+      "owasp": [
+        "LLM10"
+      ],
+      "ai_rmf": [
+        "MAP 3"
+      ],
+      "evidence": [
+        "src/cybwaydb/budget.py:4 \u2014 call never happens. dry_run() lets a human see projected cost first.",
+        "src/cybwaydb/budget.py:21 \u2014 def dry_run(self, estimated_cost_usd: float) -> dict:",
+        "src/cybwaydb/budget.py:32 \u2014 if self.dry_run(estimated_cost_usd)[\"would_exceed\"]:",
+        "src/cybwaydb/evalbench.py:11 \u2014 from .providers import MockProvider",
+        "src/cybwaydb/evalbench.py:19 \u2014 provider_factory = lambda seed: MockProvider(seed=seed)",
+        "src/cybwaydb/gate.py:5 \u2014 codebase \u2014 dry_run() is the terminal state; it returns the SQL for a human",
+        "\u2026 3 more"
+      ],
+      "guidance": "Provide a deterministic mock provider (or dry-run) as the default so the suite runs at $0 and live calls are an explicit opt-in.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-006",
+      "title": "Human approval gate, no auto-execute",
+      "status": "PASS",
+      "severity": "high",
+      "area": "Agency",
+      "owasp": [
+        "LLM06",
+        "LLM05"
+      ],
+      "ai_rmf": [
+        "GOVERN 3",
+        "MANAGE 1"
+      ],
+      "evidence": [
+        "src/cybwaydb/gate.py:23 \u2014 class ApprovalRequired(RuntimeError):",
+        "src/cybwaydb/gate.py:34 \u2014 class ApprovalGate:",
+        "src/cybwaydb/gate.py:44 \u2014 def approve(self, rule_id: str, approver: str, reason: str) -> None:",
+        "src/cybwaydb/gate.py:47 \u2014 def reject(self, rule_id: str, approver: str, reason: str) -> None:",
+        "src/cybwaydb/gate.py:99 \u2014 raise ApprovalRequired("
+      ],
+      "guidance": "",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-007",
+      "title": "Independent verification of model output",
+      "status": "PASS",
+      "severity": "high",
+      "area": "Accuracy",
+      "owasp": [
+        "LLM09"
+      ],
+      "ai_rmf": [
+        "MEASURE 2",
+        "MANAGE 2"
+      ],
+      "evidence": [
+        "src/cybwaydb/agents.py:1 \u2014 \"\"\"AI layer: auditor agent + independent checker agent.",
+        "src/cybwaydb/agents.py:4 \u2014 - The checker NEVER grades its own generation: it re-derives ground truth",
+        "src/cybwaydb/agents.py:7 \u2014 - Every finding is adjudicated PASS / REVIEW / QUARANTINE.",
+        "src/cybwaydb/agents.py:33 \u2014 ground_truth = [f.to_dict() for f in run_all_rules(conn) if f.status == FAIL]",
+        "src/cybwaydb/agents.py:36 \u2014 ground_truth_findings=ground_truth,",
+        "src/cybwaydb/agents.py:63 \u2014 class CheckerAgent:",
+        "\u2026 23 more"
+      ],
+      "guidance": "Re-derive the claim from source data (a rule engine, a second independent check) and adjudicate PASS / REVIEW / QUARANTINE. The model must never grade its own output.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-008",
+      "title": "Structured output validated",
+      "status": "PASS",
+      "severity": "medium",
+      "area": "Output handling",
+      "owasp": [
+        "LLM05"
+      ],
+      "ai_rmf": [
+        "MEASURE 2"
+      ],
+      "evidence": [
+        "src/cybwaydb/agents.py:38 \u2014 findings = json.loads(raw)  # strict JSON or it raises",
+        "src/cybwaydb/auditlog.py:36 \u2014 return _entry_hash(json.loads(last_line))",
+        "src/cybwaydb/auditlog.py:52 \u2014 return [json.loads(line) for line in self.path.read_text(encoding=\"utf-8\").splitlines() if line.strip()]",
+        "\u2026 6 more",
+        "src/cybwaydb/synthdb.py:6 \u2014 The schema intentionally mirrors the shape of Oracle data-dictionary views",
+        "src/cybwaydb/synthdb.py:18 \u2014 SCHEMA = \"\"\"",
+        "src/cybwaydb/synthdb.py:138 \u2014 conn.executescript(SCHEMA)"
+      ],
+      "guidance": "Ask for strict JSON, parse it inside try/except, and validate the shape (schema, allowed values) before anything downstream reads it.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-009",
+      "title": "Prompt-injection detection",
+      "status": "PASS",
+      "severity": "high",
+      "area": "Input handling",
+      "owasp": [
+        "LLM01"
+      ],
+      "ai_rmf": [
+        "MEASURE 2",
+        "MANAGE 2"
+      ],
+      "evidence": [
+        "src/cybwaydb/agents.py:16 \u2014 from .redteam import scan_text_for_injection",
+        "src/cybwaydb/agents.py:74 \u2014 This is what catches the injection canary.\"\"\"",
+        "src/cybwaydb/cli.py:42 \u2014 sub.add_parser(\"redteam\", help=\"Scan raw config for published OWASP-LLM injection patterns (incl. canary)\")",
+        "src/cybwaydb/cli.py:124 \u2014 if args.command == \"redteam\":",
+        "src/cybwaydb/cli.py:128 \u2014 return 0 if hits else 1  # the canary MUST be caught",
+        "src/cybwaydb/redteam.py:3 \u2014 18 published prompt-injection / jailbreak / data-exfiltration patterns,",
+        "\u2026 10 more"
+      ],
+      "guidance": "Scan untrusted input for published injection patterns before it reaches the prompt, plant a canary, and keep a red-team suite in the tests.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-010",
+      "title": "Tamper-evident audit log",
+      "status": "PASS",
+      "severity": "medium",
+      "area": "Accountability",
+      "owasp": [],
+      "ai_rmf": [
+        "GOVERN 4",
+        "MEASURE 3"
+      ],
+      "evidence": [
+        "src/cybwaydb/auditlog.py:5 \u2014 breaks the chain and is detected by verify_chain().",
+        "src/cybwaydb/auditlog.py:43 \u2014 \"prev_hash\": self._last_hash(),",
+        "src/cybwaydb/auditlog.py:54 \u2014 def verify_chain(self) -> tuple[bool, str]:",
+        "src/cybwaydb/auditlog.py:58 \u2014 if entry.get(\"prev_hash\") != prev:",
+        "src/cybwaydb/auditlog.py:59 \u2014 return False, f\"chain broken at entry {i}: expected prev_hash {prev}\"",
+        "src/cybwaydb/cli.py:80 \u2014 log_ok, msg = AuditLog(f\"{args.run_dir}/audit.log.jsonl\").verify_chain()",
+        "\u2026 1 more"
+      ],
+      "guidance": "Hash-chain the log (each entry carries the SHA-256 of the previous) and write a manifest of run outputs so edits, deletions and reordering are detectable.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-011",
+      "title": "Accuracy evaluation exists",
+      "status": "PASS",
+      "severity": "high",
+      "area": "Accuracy",
+      "owasp": [
+        "LLM09"
+      ],
+      "ai_rmf": [
+        "MEASURE 1",
+        "MEASURE 2"
+      ],
+      "evidence": [
+        "src/cybwaydb/cli.py:38 \u2014 p_bench = sub.add_parser(\"benchmark\", help=\"Measure auditor precision/recall vs ground truth (mock, $0)\")",
+        "src/cybwaydb/cli.py:58 \u2014 p_report.add_argument(\"--live-benchmark\", default=None,",
+        "src/cybwaydb/cli.py:92 \u2014 if args.command == \"benchmark\":",
+        "src/cybwaydb/cli.py:93 \u2014 from .evalbench import run_benchmark",
+        "src/cybwaydb/controls.py:28 \u2014 \"cis benchmark\",          # copyrighted content excluded",
+        "src/cybwaydb/evalbench.py:1 \u2014 \"\"\"EVAL BENCHMARK: measure the AI auditor's precision/recall against",
+        "\u2026 22 more",
+        "BENCHMARKS.md \u2014 benchmark artifact",
+        "docs/evidence/live-run/live_benchmark.json \u2014 benchmark artifact"
+      ],
+      "guidance": "Score the model against deterministic ground truth (precision / recall / F1 over N runs) and commit the numbers with the evidence that produced them.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-012",
+      "title": "Drift / regression detection",
+      "status": "PASS",
+      "severity": "low",
+      "area": "Monitoring",
+      "owasp": [
+        "LLM09"
+      ],
+      "ai_rmf": [
+        "MEASURE 3",
+        "MANAGE 4"
+      ],
+      "evidence": [
+        "src/cybwaydb/cli.py:51 \u2014 p_drift = sub.add_parser(\"drift\", help=\"Diff security posture between two scans\")",
+        "src/cybwaydb/cli.py:52 \u2014 p_drift.add_argument(\"--old\", required=True, help=\"Previous run's findings.json\")",
+        "src/cybwaydb/cli.py:53 \u2014 p_drift.add_argument(\"--new\", required=True, help=\"Latest run's findings.json\")",
+        "src/cybwaydb/cli.py:118 \u2014 if args.command == \"drift\":",
+        "src/cybwaydb/cli.py:119 \u2014 from .drift import diff_postures, load_findings",
+        "src/cybwaydb/cli.py:122 \u2014 return 0 if d[\"verdict\"] != \"REGRESSED\" else 1  # CI-friendly: regression fails the pipeline",
+        "\u2026 4 more"
+      ],
+      "guidance": "Diff each run against the previous one and fail CI when a previously passing case regresses. Model updates change behaviour silently.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-013",
+      "title": "Model identifier declared",
+      "status": "PASS",
+      "severity": "medium",
+      "area": "Provenance",
+      "owasp": [
+        "LLM03"
+      ],
+      "ai_rmf": [
+        "GOVERN 4",
+        "MAP 2"
+      ],
+      "evidence": [
+        "src/cybwaydb/providers.py:70 \u2014 gemini-flash-lite-latest"
+      ],
+      "guidance": "Name the exact model in code (env-overridable), so a card and a benchmark can say which model produced which numbers.",
+      "note": "models: gemini-flash-lite-latest; environment override present"
+    },
+    {
+      "check_id": "CARD-014",
+      "title": "Explicit timeouts on model calls",
+      "status": "PASS",
+      "severity": "low",
+      "area": "Resilience",
+      "owasp": [
+        "LLM10"
+      ],
+      "ai_rmf": [
+        "MANAGE 2"
+      ],
+      "evidence": [
+        "src/cybwaydb/providers.py:92 \u2014 with urllib.request.urlopen(req, timeout=120) as resp:"
+      ],
+      "guidance": "Pass an explicit timeout and a bounded retry count to the client; SDK defaults are generous and invisible in a review.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-015",
+      "title": "Tests and CI present",
+      "status": "PASS",
+      "severity": "medium",
+      "area": "Engineering",
+      "owasp": [],
+      "ai_rmf": [
+        "MEASURE 1",
+        "GOVERN 1"
+      ],
+      "evidence": [
+        "tests: yes",
+        "CI workflow: yes"
+      ],
+      "guidance": "Governance claims need a test that fails when the control is removed, and a CI job that runs it on every push.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-016",
+      "title": "CI runs without model API secrets",
+      "status": "PASS",
+      "severity": "low",
+      "area": "Cost",
+      "owasp": [
+        "LLM10"
+      ],
+      "ai_rmf": [
+        "MAP 3",
+        "GOVERN 6"
+      ],
+      "evidence": [],
+      "guidance": "Run CI in mock mode. If a live job is needed, isolate it behind a manual trigger with its own budget ceiling.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-017",
+      "title": "License and intended-use documentation",
+      "status": "PASS",
+      "severity": "medium",
+      "area": "Transparency",
+      "owasp": [],
+      "ai_rmf": [
+        "GOVERN 4",
+        "GOVERN 1"
+      ],
+      "evidence": [
+        "LICENSE: yes",
+        "README: yes",
+        "NOTICE: yes"
+      ],
+      "guidance": "State the license and, in the README's first paragraph, what the system is for and what it must not be used for. The card quotes that paragraph as the intended use.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-018",
+      "title": "Dependencies pinned",
+      "status": "PASS",
+      "severity": "medium",
+      "area": "Supply chain",
+      "owasp": [
+        "LLM03"
+      ],
+      "ai_rmf": [
+        "GOVERN 6"
+      ],
+      "evidence": [],
+      "guidance": "Pin every runtime dependency to an exact version (==) and bump deliberately; model SDKs change behaviour between minor versions.",
+      "note": "declared dependencies: 0 (stdlib-only)"
+    },
+    {
+      "check_id": "CARD-019",
+      "title": "Data minimisation stated or enforced",
+      "status": "PASS",
+      "severity": "medium",
+      "area": "Data handling",
+      "owasp": [
+        "LLM02"
+      ],
+      "ai_rmf": [
+        "MAP 4",
+        "MANAGE 2"
+      ],
+      "evidence": [
+        "BENCHMARKS.md:9 \u2014 (17 seeded violations). Config metadata only sent to the model; no table",
+        "docs/NIST_AI_RMF_MAPPING.md:32 \u2014 | MAP 4 \u2014 Risks and impacts to individuals and data | Only configuration *metadata* is ever sent to a model \u2014 never table contents, never credentials. The synthetic catalog includes a planted injecti\u2026",
+        "PROGRESS.md:54 \u2014 - livedemo.py: one budget-capped demo \u2014 config metadata only in prompt (canary/app tables excluded), checker adjudicates every finding, precision/recall scored vs ground truth, results + hash-chained\u2026",
+        "\u2026 1 more"
+      ],
+      "guidance": "Write down exactly which fields reach the model (and which never do), and enforce it with a redaction / allow-list step in the prompt builder.",
+      "note": ""
+    }
+  ],
+  "risk_register": [
+    {
+      "id": "LLM01",
+      "name": "Prompt Injection",
+      "status": "MITIGATED",
+      "checks": [
+        "CARD-009"
+      ],
+      "note": "CARD-009 PASS"
+    },
+    {
+      "id": "LLM02",
+      "name": "Sensitive Information Disclosure",
+      "status": "MITIGATED",
+      "checks": [
+        "CARD-002",
+        "CARD-003",
+        "CARD-019"
+      ],
+      "note": "CARD-002 PASS; CARD-003 PASS; CARD-019 PASS"
+    },
+    {
+      "id": "LLM03",
+      "name": "Supply Chain",
+      "status": "MITIGATED",
+      "checks": [
+        "CARD-013",
+        "CARD-018"
+      ],
+      "note": "CARD-013 PASS; CARD-018 PASS"
+    },
+    {
+      "id": "LLM04",
+      "name": "Data and Model Poisoning",
+      "status": "NOT_ASSESSED",
+      "checks": [],
+      "note": "Training/fine-tuning data provenance is a runtime and supply-chain question, not visible in application code."
+    },
+    {
+      "id": "LLM05",
+      "name": "Improper Output Handling",
+      "status": "MITIGATED",
+      "checks": [
+        "CARD-006",
+        "CARD-008"
+      ],
+      "note": "CARD-006 PASS; CARD-008 PASS"
+    },
+    {
+      "id": "LLM06",
+      "name": "Excessive Agency",
+      "status": "MITIGATED",
+      "checks": [
+        "CARD-006"
+      ],
+      "note": "CARD-006 PASS"
+    },
+    {
+      "id": "LLM07",
+      "name": "System Prompt Leakage",
+      "status": "NOT_ASSESSED",
+      "checks": [],
+      "note": "Whether a system prompt leaks depends on model behaviour at runtime; static analysis can only inventory prompts."
+    },
+    {
+      "id": "LLM08",
+      "name": "Vector and Embedding Weaknesses",
+      "status": "NOT_ASSESSED",
+      "checks": [],
+      "note": "Requires review of the retrieval architecture and access controls on the vector store; not evaluable statically."
+    },
+    {
+      "id": "LLM09",
+      "name": "Misinformation",
+      "status": "MITIGATED",
+      "checks": [
+        "CARD-007",
+        "CARD-011",
+        "CARD-012"
+      ],
+      "note": "CARD-007 PASS; CARD-011 PASS; CARD-012 PASS"
+    },
+    {
+      "id": "LLM10",
+      "name": "Unbounded Consumption",
+      "status": "MITIGATED",
+      "checks": [
+        "CARD-004",
+        "CARD-005",
+        "CARD-014",
+        "CARD-016"
+      ],
+      "note": "CARD-004 PASS; CARD-005 PASS; CARD-014 PASS; CARD-016 PASS"
+    }
+  ],
+  "ai_rmf": {
+    "GOVERN": {
+      "checks": [
+        "CARD-002",
+        "CARD-003",
+        "CARD-006",
+        "CARD-010",
+        "CARD-013",
+        "CARD-015",
+        "CARD-016",
+        "CARD-017",
+        "CARD-018"
+      ],
+      "categories": [
+        "GOVERN 1",
+        "GOVERN 3",
+        "GOVERN 4",
+        "GOVERN 6"
+      ],
+      "pass": 9,
+      "fail": 0,
+      "na": 0
+    },
+    "MAP": {
+      "checks": [
+        "CARD-001",
+        "CARD-002",
+        "CARD-004",
+        "CARD-005",
+        "CARD-013",
+        "CARD-016",
+        "CARD-019"
+      ],
+      "categories": [
+        "MAP 2",
+        "MAP 3",
+        "MAP 4"
+      ],
+      "pass": 7,
+      "fail": 0,
+      "na": 0
+    },
+    "MEASURE": {
+      "checks": [
+        "CARD-007",
+        "CARD-008",
+        "CARD-009",
+        "CARD-010",
+        "CARD-011",
+        "CARD-012",
+        "CARD-015"
+      ],
+      "categories": [
+        "MEASURE 1",
+        "MEASURE 2",
+        "MEASURE 3"
+      ],
+      "pass": 7,
+      "fail": 0,
+      "na": 0
+    },
+    "MANAGE": {
+      "checks": [
+        "CARD-004",
+        "CARD-006",
+        "CARD-007",
+        "CARD-009",
+        "CARD-012",
+        "CARD-014",
+        "CARD-019"
+      ],
+      "categories": [
+        "MANAGE 1",
+        "MANAGE 2",
+        "MANAGE 4"
+      ],
+      "pass": 7,
+      "fail": 0,
+      "na": 0
+    }
+  },
+  "evaluation": {
+    "eval_markers": 28,
+    "benchmark_files": [
+      "BENCHMARKS.md",
+      "docs/evidence/live-run/live_benchmark.json"
+    ]
+  },
+  "data_handling": {
+    "statements": [
+      "BENCHMARKS.md:9 \u2014 (17 seeded violations). Config metadata only sent to the model; no table",
+      "docs/NIST_AI_RMF_MAPPING.md:32 \u2014 | MAP 4 \u2014 Risks and impacts to individuals and data | Only configuration *metadata* is ever sent to a model \u2014 never table contents, never credentials. The synthetic catalog includes a planted injecti\u2026",
+      "PROGRESS.md:54 \u2014 - livedemo.py: one budget-capped demo \u2014 config metadata only in prompt (canary/app tables excluded), checker adjudicates every finding, precision/recall scored vs ground truth, results + hash-chained\u2026",
+      "README.md:84 \u2014 - Config metadata only is ever sent to an LLM \u2014 never table data, never passwords."
+    ],
+    "redaction_markers": 0,
+    "env_keys": [
+      "ANTHROPIC_API_KEY",
+      "GOOGLE_API_KEY"
+    ],
+    "hardcoded_secrets": 0
+  },
+  "caveats": [
+    "Static analysis only: the code was read, never executed. A control that exists in code may still be bypassed at runtime; a control implemented under an unusual name may be missed.",
+    "Checks are identifier and pattern heuristics with cited evidence. Treat a PASS as 'evidence found', not as certification, and a FAIL as 'no evidence found', not proof of absence.",
+    "Three OWASP LLM categories (LLM04, LLM07, LLM08) are reported as NOT ASSESSED because no honest static check exists for them.",
+    "Python sources only. Model calls made from other languages, notebooks, or shell scripts are not inventoried.",
+    "This card describes the application code around a model, not the model itself. Foundation-model training data, licences and safety evaluations belong to the model provider's own card."
+  ],
+  "references": {
+    "owasp": "OWASP Top 10 for LLM Applications \u2014 category names used with attribution to the OWASP Foundation",
+    "nist_ai_rmf": "NIST AI RMF 1.0 (NIST AI 100-1) \u2014 function/category identifiers; self-assessed mapping, not a conformance claim"
+  }
+}

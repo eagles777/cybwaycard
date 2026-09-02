@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools==70.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cybwaycard"
+version = "0.1.0"
+description = "Cybwaycard - static AI-system-card and AI-risk-register generator for LLM-using codebases (offline, no model, $0)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "V. Vikram" }]
+keywords = ["model card", "AI governance", "risk register", "OWASP LLM", "NIST AI RMF", "static analysis"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+]
+# Runtime is stdlib-only by design (supply-chain minimalism; the tool audits supply chains).
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest==8.2.2"]
+
+[project.scripts]
+cybwaycard = "cybwaycard.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

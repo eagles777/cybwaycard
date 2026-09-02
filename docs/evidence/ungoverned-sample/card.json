@@ -1,0 +1,575 @@
+{
+  "card_format": "AI System Card + AI Risk Register (cybwaycard)",
+  "generator": {
+    "name": "cybwaycard",
+    "version": "0.1.0",
+    "mode": "static analysis, offline, no model call, $0"
+  },
+  "generated_at": "2026-09-02T00:00:00+00:00",
+  "subject": {
+    "name": "Ungoverned sample",
+    "files_scanned": 3,
+    "python_files": 1,
+    "doc_files": 2,
+    "parse_errors": []
+  },
+  "system_details": {
+    "uses_ai": true,
+    "providers": {
+      "OpenAI": 1
+    },
+    "call_sites": [
+      "app.py:10 \u2014 client.chat.completions.create"
+    ],
+    "model_ids": [
+      "gpt-4o"
+    ],
+    "model_env_override": false,
+    "ai_files": [
+      "app.py"
+    ],
+    "execution_primitives": 1
+  },
+  "intended_use": "Asks the model what to run, then runs it.",
+  "summary": {
+    "verdict": "GAPS FOUND",
+    "score_pct": 11,
+    "pass": 2,
+    "fail": 16,
+    "na": 1,
+    "total": 19,
+    "high_fails": 6,
+    "medium_fails": 8,
+    "low_fails": 2
+  },
+  "checks": [
+    {
+      "check_id": "CARD-001",
+      "title": "LLM usage inventoried",
+      "status": "PASS",
+      "severity": "info",
+      "area": "Inventory",
+      "owasp": [],
+      "ai_rmf": [
+        "MAP 2"
+      ],
+      "evidence": [
+        "app.py:4 \u2014 import openai",
+        "app.py:10 \u2014 resp = client.chat.completions.create("
+      ],
+      "guidance": "Every model call site should be known and listed. Cybwaycard derives this from imports, API hosts and call names; keep model access behind one module so the inventory stays short.",
+      "note": "providers: OpenAI; call sites: 1; AI files: 1"
+    },
+    {
+      "check_id": "CARD-002",
+      "title": "No hardcoded credentials",
+      "status": "FAIL",
+      "severity": "high",
+      "area": "Secrets",
+      "owasp": [
+        "LLM02"
+      ],
+      "ai_rmf": [
+        "GOVERN 6",
+        "MAP 4"
+      ],
+      "evidence": [
+        "app.py:6 \u2014 client = openai.OpenAI(api_key=<redacted>)"
+      ],
+      "guidance": "Move keys to environment variables or a secret store; rotate any key that was committed. Values shown here are redacted at scan time.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-003",
+      "title": "Credentials sourced from environment",
+      "status": "FAIL",
+      "severity": "medium",
+      "area": "Secrets",
+      "owasp": [
+        "LLM02"
+      ],
+      "ai_rmf": [
+        "GOVERN 6"
+      ],
+      "evidence": [
+        "app.py:6 \u2014 client = openai.OpenAI(api_key=<redacted>)"
+      ],
+      "guidance": "Read the key with os.environ / a secret manager and delete the literal.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-004",
+      "title": "Code-enforced cost ceiling",
+      "status": "FAIL",
+      "severity": "high",
+      "area": "Cost",
+      "owasp": [
+        "LLM10"
+      ],
+      "ai_rmf": [
+        "MAP 3",
+        "MANAGE 2"
+      ],
+      "evidence": [],
+      "guidance": "Add a budget object that is charged BEFORE each network call and raises when the ceiling would be exceeded. A dashboard alert is not a control; code is.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-005",
+      "title": "Offline (mock) mode available",
+      "status": "FAIL",
+      "severity": "medium",
+      "area": "Cost",
+      "owasp": [
+        "LLM10"
+      ],
+      "ai_rmf": [
+        "MAP 3"
+      ],
+      "evidence": [],
+      "guidance": "Provide a deterministic mock provider (or dry-run) as the default so the suite runs at $0 and live calls are an explicit opt-in.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-006",
+      "title": "Human approval gate, no auto-execute",
+      "status": "FAIL",
+      "severity": "high",
+      "area": "Agency",
+      "owasp": [
+        "LLM06",
+        "LLM05"
+      ],
+      "ai_rmf": [
+        "GOVERN 3",
+        "MANAGE 1"
+      ],
+      "evidence": [
+        "app.py:19 \u2014 subprocess.run(command, shell=True)"
+      ],
+      "guidance": "Model output reaches an execution primitive with no approval step in between. Route every consequential action through a logged approve/reject decision by a named human.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-007",
+      "title": "Independent verification of model output",
+      "status": "FAIL",
+      "severity": "high",
+      "area": "Accuracy",
+      "owasp": [
+        "LLM09"
+      ],
+      "ai_rmf": [
+        "MEASURE 2",
+        "MANAGE 2"
+      ],
+      "evidence": [],
+      "guidance": "Re-derive the claim from source data (a rule engine, a second independent check) and adjudicate PASS / REVIEW / QUARANTINE. The model must never grade its own output.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-008",
+      "title": "Structured output validated",
+      "status": "FAIL",
+      "severity": "medium",
+      "area": "Output handling",
+      "owasp": [
+        "LLM05"
+      ],
+      "ai_rmf": [
+        "MEASURE 2"
+      ],
+      "evidence": [],
+      "guidance": "Ask for strict JSON, parse it inside try/except, and validate the shape (schema, allowed values) before anything downstream reads it.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-009",
+      "title": "Prompt-injection detection",
+      "status": "FAIL",
+      "severity": "high",
+      "area": "Input handling",
+      "owasp": [
+        "LLM01"
+      ],
+      "ai_rmf": [
+        "MEASURE 2",
+        "MANAGE 2"
+      ],
+      "evidence": [],
+      "guidance": "Scan untrusted input for published injection patterns before it reaches the prompt, plant a canary, and keep a red-team suite in the tests.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-010",
+      "title": "Tamper-evident audit log",
+      "status": "FAIL",
+      "severity": "medium",
+      "area": "Accountability",
+      "owasp": [],
+      "ai_rmf": [
+        "GOVERN 4",
+        "MEASURE 3"
+      ],
+      "evidence": [],
+      "guidance": "Hash-chain the log (each entry carries the SHA-256 of the previous) and write a manifest of run outputs so edits, deletions and reordering are detectable.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-011",
+      "title": "Accuracy evaluation exists",
+      "status": "FAIL",
+      "severity": "high",
+      "area": "Accuracy",
+      "owasp": [
+        "LLM09"
+      ],
+      "ai_rmf": [
+        "MEASURE 1",
+        "MEASURE 2"
+      ],
+      "evidence": [],
+      "guidance": "Score the model against deterministic ground truth (precision / recall / F1 over N runs) and commit the numbers with the evidence that produced them.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-012",
+      "title": "Drift / regression detection",
+      "status": "FAIL",
+      "severity": "low",
+      "area": "Monitoring",
+      "owasp": [
+        "LLM09"
+      ],
+      "ai_rmf": [
+        "MEASURE 3",
+        "MANAGE 4"
+      ],
+      "evidence": [],
+      "guidance": "Diff each run against the previous one and fail CI when a previously passing case regresses. Model updates change behaviour silently.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-013",
+      "title": "Model identifier declared",
+      "status": "PASS",
+      "severity": "medium",
+      "area": "Provenance",
+      "owasp": [
+        "LLM03"
+      ],
+      "ai_rmf": [
+        "GOVERN 4",
+        "MAP 2"
+      ],
+      "evidence": [
+        "app.py:11 \u2014 gpt-4o"
+      ],
+      "guidance": "Name the exact model in code (env-overridable), so a card and a benchmark can say which model produced which numbers.",
+      "note": "models: gpt-4o"
+    },
+    {
+      "check_id": "CARD-014",
+      "title": "Explicit timeouts on model calls",
+      "status": "FAIL",
+      "severity": "low",
+      "area": "Resilience",
+      "owasp": [
+        "LLM10"
+      ],
+      "ai_rmf": [
+        "MANAGE 2"
+      ],
+      "evidence": [],
+      "guidance": "Pass an explicit timeout and a bounded retry count to the client; SDK defaults are generous and invisible in a review.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-015",
+      "title": "Tests and CI present",
+      "status": "FAIL",
+      "severity": "medium",
+      "area": "Engineering",
+      "owasp": [],
+      "ai_rmf": [
+        "MEASURE 1",
+        "GOVERN 1"
+      ],
+      "evidence": [
+        "tests: no",
+        "CI workflow: no"
+      ],
+      "guidance": "Governance claims need a test that fails when the control is removed, and a CI job that runs it on every push.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-016",
+      "title": "CI runs without model API secrets",
+      "status": "NA",
+      "severity": "low",
+      "area": "Cost",
+      "owasp": [
+        "LLM10"
+      ],
+      "ai_rmf": [
+        "MAP 3",
+        "GOVERN 6"
+      ],
+      "evidence": [],
+      "guidance": "",
+      "note": "No CI workflow found."
+    },
+    {
+      "check_id": "CARD-017",
+      "title": "License and intended-use documentation",
+      "status": "FAIL",
+      "severity": "medium",
+      "area": "Transparency",
+      "owasp": [],
+      "ai_rmf": [
+        "GOVERN 4",
+        "GOVERN 1"
+      ],
+      "evidence": [
+        "LICENSE: no",
+        "README: yes",
+        "NOTICE: no"
+      ],
+      "guidance": "State the license and, in the README's first paragraph, what the system is for and what it must not be used for. The card quotes that paragraph as the intended use.",
+      "note": ""
+    },
+    {
+      "check_id": "CARD-018",
+      "title": "Dependencies pinned",
+      "status": "FAIL",
+      "severity": "medium",
+      "area": "Supply chain",
+      "owasp": [
+        "LLM03"
+      ],
+      "ai_rmf": [
+        "GOVERN 6"
+      ],
+      "evidence": [
+        "requirements.txt:1 \u2014 openai",
+        "requirements.txt:2 \u2014 requests>=2"
+      ],
+      "guidance": "Pin every runtime dependency to an exact version (==) and bump deliberately; model SDKs change behaviour between minor versions.",
+      "note": "declared dependencies: 2"
+    },
+    {
+      "check_id": "CARD-019",
+      "title": "Data minimisation stated or enforced",
+      "status": "FAIL",
+      "severity": "medium",
+      "area": "Data handling",
+      "owasp": [
+        "LLM02"
+      ],
+      "ai_rmf": [
+        "MAP 4",
+        "MANAGE 2"
+      ],
+      "evidence": [],
+      "guidance": "Write down exactly which fields reach the model (and which never do), and enforce it with a redaction / allow-list step in the prompt builder.",
+      "note": ""
+    }
+  ],
+  "risk_register": [
+    {
+      "id": "LLM01",
+      "name": "Prompt Injection",
+      "status": "UNMITIGATED",
+      "checks": [
+        "CARD-009"
+      ],
+      "note": "CARD-009 FAIL"
+    },
+    {
+      "id": "LLM02",
+      "name": "Sensitive Information Disclosure",
+      "status": "UNMITIGATED",
+      "checks": [
+        "CARD-002",
+        "CARD-003",
+        "CARD-019"
+      ],
+      "note": "CARD-002 FAIL; CARD-003 FAIL; CARD-019 FAIL"
+    },
+    {
+      "id": "LLM03",
+      "name": "Supply Chain",
+      "status": "PARTIAL",
+      "checks": [
+        "CARD-013",
+        "CARD-018"
+      ],
+      "note": "CARD-013 PASS; CARD-018 FAIL"
+    },
+    {
+      "id": "LLM04",
+      "name": "Data and Model Poisoning",
+      "status": "NOT_ASSESSED",
+      "checks": [],
+      "note": "Training/fine-tuning data provenance is a runtime and supply-chain question, not visible in application code."
+    },
+    {
+      "id": "LLM05",
+      "name": "Improper Output Handling",
+      "status": "UNMITIGATED",
+      "checks": [
+        "CARD-006",
+        "CARD-008"
+      ],
+      "note": "CARD-006 FAIL; CARD-008 FAIL"
+    },
+    {
+      "id": "LLM06",
+      "name": "Excessive Agency",
+      "status": "UNMITIGATED",
+      "checks": [
+        "CARD-006"
+      ],
+      "note": "CARD-006 FAIL"
+    },
+    {
+      "id": "LLM07",
+      "name": "System Prompt Leakage",
+      "status": "NOT_ASSESSED",
+      "checks": [],
+      "note": "Whether a system prompt leaks depends on model behaviour at runtime; static analysis can only inventory prompts."
+    },
+    {
+      "id": "LLM08",
+      "name": "Vector and Embedding Weaknesses",
+      "status": "NOT_ASSESSED",
+      "checks": [],
+      "note": "Requires review of the retrieval architecture and access controls on the vector store; not evaluable statically."
+    },
+    {
+      "id": "LLM09",
+      "name": "Misinformation",
+      "status": "UNMITIGATED",
+      "checks": [
+        "CARD-007",
+        "CARD-011",
+        "CARD-012"
+      ],
+      "note": "CARD-007 FAIL; CARD-011 FAIL; CARD-012 FAIL"
+    },
+    {
+      "id": "LLM10",
+      "name": "Unbounded Consumption",
+      "status": "UNMITIGATED",
+      "checks": [
+        "CARD-004",
+        "CARD-005",
+        "CARD-014",
+        "CARD-016"
+      ],
+      "note": "CARD-004 FAIL; CARD-005 FAIL; CARD-014 FAIL"
+    }
+  ],
+  "ai_rmf": {
+    "GOVERN": {
+      "checks": [
+        "CARD-002",
+        "CARD-003",
+        "CARD-006",
+        "CARD-010",
+        "CARD-013",
+        "CARD-015",
+        "CARD-016",
+        "CARD-017",
+        "CARD-018"
+      ],
+      "categories": [
+        "GOVERN 1",
+        "GOVERN 3",
+        "GOVERN 4",
+        "GOVERN 6"
+      ],
+      "pass": 1,
+      "fail": 7,
+      "na": 1
+    },
+    "MAP": {
+      "checks": [
+        "CARD-001",
+        "CARD-002",
+        "CARD-004",
+        "CARD-005",
+        "CARD-013",
+        "CARD-016",
+        "CARD-019"
+      ],
+      "categories": [
+        "MAP 2",
+        "MAP 3",
+        "MAP 4"
+      ],
+      "pass": 2,
+      "fail": 4,
+      "na": 1
+    },
+    "MEASURE": {
+      "checks": [
+        "CARD-007",
+        "CARD-008",
+        "CARD-009",
+        "CARD-010",
+        "CARD-011",
+        "CARD-012",
+        "CARD-015"
+      ],
+      "categories": [
+        "MEASURE 1",
+        "MEASURE 2",
+        "MEASURE 3"
+      ],
+      "pass": 0,
+      "fail": 7,
+      "na": 0
+    },
+    "MANAGE": {
+      "checks": [
+        "CARD-004",
+        "CARD-006",
+        "CARD-007",
+        "CARD-009",
+        "CARD-012",
+        "CARD-014",
+        "CARD-019"
+      ],
+      "categories": [
+        "MANAGE 1",
+        "MANAGE 2",
+        "MANAGE 4"
+      ],
+      "pass": 0,
+      "fail": 7,
+      "na": 0
+    }
+  },
+  "evaluation": {
+    "eval_markers": 0,
+    "benchmark_files": []
+  },
+  "data_handling": {
+    "statements": [],
+    "redaction_markers": 0,
+    "env_keys": [],
+    "hardcoded_secrets": 1
+  },
+  "caveats": [
+    "Static analysis only: the code was read, never executed. A control that exists in code may still be bypassed at runtime; a control implemented under an unusual name may be missed.",
+    "Checks are identifier and pattern heuristics with cited evidence. Treat a PASS as 'evidence found', not as certification, and a FAIL as 'no evidence found', not proof of absence.",
+    "Three OWASP LLM categories (LLM04, LLM07, LLM08) are reported as NOT ASSESSED because no honest static check exists for them.",
+    "Python sources only. Model calls made from other languages, notebooks, or shell scripts are not inventoried.",
+    "This card describes the application code around a model, not the model itself. Foundation-model training data, licences and safety evaluations belong to the model provider's own card."
+  ],
+  "references": {
+    "owasp": "OWASP Top 10 for LLM Applications \u2014 category names used with attribution to the OWASP Foundation",
+    "nist_ai_rmf": "NIST AI RMF 1.0 (NIST AI 100-1) \u2014 function/category identifiers; self-assessed mapping, not a conformance claim"
+  }
+}

@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cybwaycard — Interactive Governance Demo</title>
+<style>
+:root{--ground:#eef1f5;--surface:#fff;--surface-2:#f6f8fb;--ink:#0f1a26;--muted:#5a6b7d;--line:#dce2ea;
+--accent:#0e7fb8;--accent-soft:#e3f1f9;--high:#c0362c;--med:#b0741a;--low:#4a6785;--pass:#1f7a4d;
+--high-soft:#f8e6e4;--med-soft:#f7edda;--pass-soft:#e2f1ea;--na:#7a8797}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ground:#0d141d;--surface:#141d28;--surface-2:#1a2634;
+--ink:#e7eef6;--muted:#93a4b8;--line:#26333f;--accent:#38bdf8;--accent-soft:#0f3247;--high:#f2645a;--med:#e0a13c;
+--low:#8299b8;--pass:#48c98a;--high-soft:#2a1614;--med-soft:#2a2011;--pass-soft:#12271d;--na:#6b7a8c}}
+:root[data-theme="dark"]{--ground:#0d141d;--surface:#141d28;--surface-2:#1a2634;--ink:#e7eef6;--muted:#93a4b8;
+--line:#26333f;--accent:#38bdf8;--accent-soft:#0f3247;--high:#f2645a;--med:#e0a13c;--low:#8299b8;--pass:#48c98a;
+--high-soft:#2a1614;--med-soft:#2a2011;--pass-soft:#12271d;--na:#6b7a8c}
+*{box-sizing:border-box}body{margin:0}
+.root{--sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.5;padding:28px 18px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.head{border-bottom:1px solid var(--line);padding-bottom:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.head h1{font-size:27px;font-weight:680;margin:0;letter-spacing:-.01em}.head .sub{color:var(--muted);font-size:14px;max-width:72ch}
+.privacy{display:flex;align-items:center;gap:10px;background:var(--pass-soft);color:var(--pass);border:1px solid color-mix(in srgb,var(--pass) 30%,transparent);
+border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600}.privacy .d{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.grid{display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:1080px){.grid{grid-template-columns:minmax(0,330px) minmax(0,1fr)}.code{grid-column:1/-1}}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+.panel{padding:16px;display:flex;flex-direction:column;gap:14px}
+.panel h2{font-size:12.5px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0}
+.fg{display:flex;flex-direction:column;gap:9px}.fg .gl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-top:4px}
+.field{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}.field label{flex:1;cursor:pointer}.field .rid{font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:6px}
+.field.danger label{color:var(--high)}
+.tog{position:relative;width:40px;height:22px;flex:none}.tog input{opacity:0;width:0;height:0;position:absolute}
+.tog .sl{position:absolute;inset:0;background:var(--line);border-radius:999px;cursor:pointer;transition:.15s}
+.tog .sl::before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s}
+.tog input:checked + .sl{background:var(--pass)}.field.danger .tog input:checked + .sl{background:var(--high)}
+.tog input:checked + .sl::before{transform:translateX(18px)}.tog input:focus-visible + .sl{outline:2px solid var(--accent);outline-offset:2px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{font-family:var(--mono);font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);
+background:var(--surface-2);color:var(--ink);cursor:pointer;font-weight:600}.btn.p{background:var(--accent);color:#fff;border-color:var(--accent)}.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.code{padding:0;overflow:hidden}.code .bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+pre.src{margin:0;padding:14px;font-family:var(--mono);font-size:11.5px;line-height:1.5;overflow:auto;max-height:640px;white-space:pre;color:var(--ink)}
+.results{display:flex;flex-direction:column;gap:14px}
+.verdict{display:inline-flex;align-items:center;gap:9px;padding:8px 14px;border-radius:999px;font-family:var(--mono);font-size:13px;font-weight:600;border:1px solid;align-self:flex-start}
+.verdict.ok{color:var(--pass);background:var(--pass-soft);border-color:var(--pass)}.verdict.bad{color:var(--high);background:var(--high-soft);border-color:var(--high)}
+.verdict.warn{color:var(--med);background:var(--med-soft);border-color:var(--med)}.verdict .dot{width:9px;height:9px;border-radius:50%;background:currentColor}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:9px}
+.kpi{padding:12px;display:flex;flex-direction:column;gap:4px}.kpi .v{font-size:22px;font-weight:680;font-family:var(--mono);line-height:1}
+.kpi .v.ok{color:var(--pass)}.kpi .v.bad{color:var(--high)}.kpi .v.na{color:var(--na)}.kpi .cap{font-size:11px;color:var(--muted)}
+.find{display:flex;flex-direction:column;gap:7px}
+.f{display:grid;grid-template-columns:5px 1fr;overflow:hidden;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
+.f .stripe{background:var(--line)}.f.high .stripe{background:var(--high)}.f.medium .stripe{background:var(--med)}.f.low .stripe{background:var(--low)}.f.PASS .stripe{background:var(--pass)}
+.f .b{padding:9px 12px;display:flex;flex-direction:column;gap:5px;min-width:0}.f .top{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.f .id{font-family:var(--mono);font-size:11.5px;color:var(--accent);font-weight:600}.f .t{font-weight:600;font-size:13px;flex:1;min-width:160px}
+.pill{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:999px;font-weight:700;white-space:nowrap}
+.pill.PASS,.pill.MITIGATED{color:var(--pass);background:var(--pass-soft)}.pill.FAIL,.pill.UNMITIGATED{color:var(--high);background:var(--high-soft)}
+.pill.NA,.pill.NOT_APPLICABLE,.pill.NOT_ASSESSED{color:var(--na);background:var(--surface-2)}.pill.PARTIAL{color:var(--med);background:var(--med-soft)}
+.f .g{font-size:12px;color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}.tbl{overflow-x:auto}
+details{font-size:13px;color:var(--muted)}summary{cursor:pointer;font-weight:600;color:var(--ink)}
+footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="root"><div class="wrap">
+
+<div class="head">
+  <div>
+    <div class="label">Cybwaycard · interactive demo</div>
+    <h1>Toggle a control. Watch the AI System Card re-grade.</h1>
+    <div class="sub">The panel on the left rewrites a synthetic <code>ai_client.py</code>. The same 19 governance checks the Python tool runs are mirrored here in JavaScript and re-run on every change, together with the OWASP LLM risk register.</div>
+  </div>
+  <div class="privacy"><span class="d"></span>Runs entirely in your browser — no API key, no network, no cost, nothing leaves this page.</div>
+</div>
+
+<div class="grid">
+  <div class="card panel">
+    <h2>Controls in the code</h2>
+    <div class="actions">
+      <button class="btn p" data-preset="ungoverned">Preset: ungoverned</button>
+      <button class="btn" data-preset="governed">Preset: governed</button>
+    </div>
+    <div class="fg" id="code-toggles"></div>
+    <h2>Facts about the repository</h2>
+    <div class="fg" id="fact-toggles"></div>
+    <details><summary>How faithful is this mirror?</summary>The check logic and regexes here are a line-for-line port of <code>signals.py</code> / <code>checks.py</code>. A parity test in the repo runs this script under Node on preset combinations and compares every check status with the Python engine. What the browser does not do: parse an AST, walk a whole repository, or write the audit log and manifest.</details>
+  </div>
+
+  <div class="card code">
+    <div class="bar"><span>ai_client.py — generated from the toggles</span><span id="loc"></span></div>
+    <pre class="src" id="src"></pre>
+  </div>
+
+  <div class="results" id="results"></div>
+</div>
+
+<footer>OWASP Top 10 for LLM Applications category names are used with attribution to the OWASP Foundation. NIST AI RMF 1.0 identifiers are referenced as a self-assessed mapping, not a conformance claim. Everything shown is synthetic.</footer>
+</div></div>
+
+<script id="engine">
+// ---- Mirror of signals.py + checks.py + card.py (statuses, register, score). Keep in sync. ----
+const CybwaycardDemo = (() => {
+  const SDK = [["anthropic","Anthropic"],["openai","OpenAI"],["google.generativeai","Google Gemini (legacy SDK)"],["google.genai","Google Gemini"],
+    ["vertexai","Google Vertex AI"],["cohere","Cohere"],["mistralai","Mistral"],["groq","Groq"],["together","Together"],["replicate","Replicate"],
+    ["litellm","LiteLLM (multi-provider)"],["langchain","LangChain"],["langchain_openai","LangChain / OpenAI"],["langchain_anthropic","LangChain / Anthropic"],
+    ["langchain_google_genai","LangChain / Google"],["llama_index","LlamaIndex"],["transformers","Hugging Face Transformers (local)"],["huggingface_hub","Hugging Face Hub"],["ollama","Ollama (local)"]];
+  const HOSTS = [["api.anthropic.com","Anthropic"],["api.openai.com","OpenAI"],["generativelanguage.googleapis.com","Google Gemini"],["aiplatform.googleapis.com","Google Vertex AI"],
+    ["api.cohere.com","Cohere"],["api.cohere.ai","Cohere"],["api.mistral.ai","Mistral"],["bedrock-runtime","AWS Bedrock"],["api.groq.com","Groq"],["openrouter.ai","OpenRouter"],["api.together.xyz","Together"]];
+  const MODEL_ID = /\b(claude-[a-z0-9.-]+|gpt-[a-z0-9.-]+|o[134](?:-mini|-pro)?\b|gemini-[a-z0-9.-]+|llama-?[0-9][a-z0-9.-]*|mistral-[a-z0-9.-]+|mixtral-[a-z0-9.-]+|command-r[a-z0-9.-]*|text-embedding-[a-z0-9.-]+|deepseek-[a-z0-9.-]+)\b/g;
+  const ENV_KEY = /(?:os\.environ(?:\.get)?\s*[\[(]|os\.getenv\s*\()\s*['"]([A-Z0-9_]*(?:API_KEY|TOKEN|SECRET)[A-Z0-9_]*)['"]/g;
+  const SECRETS = [/sk-ant-[A-Za-z0-9_-]{10,}/, /\bsk-(?:proj-|live-|test-)?[A-Za-z0-9]{20,}\b/, /\bAIza[0-9A-Za-z_-]{30,}\b/,
+    /\b(api[_-]?key|secret[_-]?key|access[_-]?token)\b\s*[:=]\s*['"][^'"]{8,}['"]/i, /\bAKIA[0-9A-Z]{16}\b/, /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/];
+  const EXEC = /\b(subprocess\.(?:run|call|Popen|check_output|check_call)|os\.system|os\.popen|(?<![\w.])exec\(|(?<![\w.])eval\()/;
+  const MARKERS = {
+    budget: /\b(?:budget\w*|cost_?ceiling\w*|max_(?:usd|cost|spend)\w*|spend_?limit\w*)\b/i,
+    gate: /\b(?:approval_?gate|approvalgate|approvalrequired|approval_?required|require\w*_approval|human_?in_?the_?loop|hitl|def approve\w*|def reject\w*|awaiting_?approval)\b/i,
+    checker: /\b(?:\w*checker\w*|adjudicat\w*|independent_?verif\w*|cross_?check\w*|ground_?truth\w*|second_?opinion\w*)\b/i,
+    chain: /\b(?:prev_?hash|previous_?hash|hash_?chain\w*|verify_?chain|merkle\w*)\b/i,
+    injection: /(?:prompt_?injection|injection_?pattern|ignore (?:all )?previous instructions|jailbreak|red_?team\w*|canary)/i,
+    eval: /\b(?:precision|recall|f1(?:_score)?|benchmark\w*|evalbench|eval_?suite|golden_?(?:set|output)\w*)\b/i,
+    drift: /\b(?:\w*drift\w*|\w*regress(?:ed|ion)\w*)\b/i,
+    mock: /\b(?:mock_?provider\w*|mockprovider|mock_?mode|dry_?run\w*|offline_?mode|fake_?transport|stub_?provider)\b/i,
+    timeout: /\b(?:timeout|max_retries)\s*=/,
+    validation: /\b(?:pydantic|jsonschema|basemodel|validate_?\w*|schema\w*|strict_?json)\b/i,
+    redaction: /\b(?:redact\w*|mask_?\w*|anonymi[sz]\w*|scrub\w*|minimi[sz]\w*|pii)\b/i,
+    json_parse: /json\.loads\(/,
+  };
+  const OWASP = {LLM01:"Prompt Injection",LLM02:"Sensitive Information Disclosure",LLM03:"Supply Chain",LLM04:"Data and Model Poisoning",LLM05:"Improper Output Handling",
+    LLM06:"Excessive Agency",LLM07:"System Prompt Leakage",LLM08:"Vector and Embedding Weaknesses",LLM09:"Misinformation",LLM10:"Unbounded Consumption"};
+  const NOT_ASSESSED = {LLM04:"Training-data provenance is a runtime / supply-chain question, not visible in application code.",
+    LLM07:"Whether a system prompt leaks depends on model behaviour at runtime.", LLM08:"Requires review of the retrieval architecture; not evaluable statically."};
+
+  function skipLine(line){ const s=line.trim(); return s.startsWith("#") || s.includes("re.compile("); }
+
+  function signalsOf(src){
+    const s={usesAi:false, providers:new Set(), modelIds:new Set(), envKeys:[], secrets:0, execs:0, markers:{}};
+    for (const raw of src.split("\n")){
+      if (skipLine(raw)) continue;
+      const imp = raw.trim().match(/^(?:import|from)\s+([\w.]+)/);
+      if (imp) for (const [mod,label] of SDK) if (imp[1]===mod || imp[1].startsWith(mod+".")) { s.usesAi=true; s.providers.add(label); }
+      for (const [host,label] of HOSTS) if (raw.includes("//"+host)) { s.usesAi=true; s.providers.add(label); }
+      for (const m of raw.matchAll(MODEL_ID)) s.modelIds.add(m[1]);
+      for (const m of raw.matchAll(ENV_KEY)) s.envKeys.push(m[1]);
+      if (SECRETS.some(rx => rx.test(raw))) s.secrets++;
+      if (EXEC.test(raw)) s.execs++;
+      for (const [k,rx] of Object.entries(MARKERS)) if (rx.test(raw)) s.markers[k]=(s.markers[k]||0)+1;
+    }
+    return s;
+  }
+
+  // facts: {tests_ci, ci_secret, license_readme, deps_pinned, data_statement}
+  function runChecks(sig, facts){
+    const ai = sig.usesAi, m = k => (sig.markers[k]||0) > 0;
+    const F = (id,title,status,sev,owasp,rmf,guidance) => ({id,title,status,sev,owasp,rmf,guidance});
+    const na = (id,title,sev,owasp,rmf) => F(id,title,"NA",sev,owasp,rmf,"");
+    const out = [];
+    out.push(F("CARD-001","LLM usage inventoried", ai?"PASS":"NA","info",[],["MAP 2"],"Keep model access behind one module so the inventory stays short."));
+    out.push(F("CARD-002","No hardcoded credentials", sig.secrets?"FAIL":"PASS","high",["LLM02"],["GOVERN 6","MAP 4"],"Move keys to environment variables or a secret store; rotate any key that was committed."));
+    out.push(!ai ? na("CARD-003","Credentials sourced from environment","medium",["LLM02"],["GOVERN 6"])
+      : sig.envKeys.length ? F("CARD-003","Credentials sourced from environment","PASS","medium",["LLM02"],["GOVERN 6"],"")
+      : sig.secrets ? F("CARD-003","Credentials sourced from environment","FAIL","medium",["LLM02"],["GOVERN 6"],"Read the key with os.environ / a secret manager and delete the literal.")
+      : F("CARD-003","Credentials sourced from environment","PASS","medium",["LLM02"],["GOVERN 6"],""));
+    out.push(!ai ? na("CARD-004","Code-enforced cost ceiling","high",["LLM10"],["MAP 3","MANAGE 2"]) : F("CARD-004","Code-enforced cost ceiling", m("budget")?"PASS":"FAIL","high",["LLM10"],["MAP 3","MANAGE 2"],"Charge a budget object BEFORE each network call; raise when the ceiling would be exceeded."));
+    out.push(!ai ? na("CARD-005","Offline (mock) mode available","medium",["LLM10"],["MAP 3"]) : F("CARD-005","Offline (mock) mode available", m("mock")?"PASS":"FAIL","medium",["LLM10"],["MAP 3"],"Provide a deterministic mock provider as the default so tests run at $0."));
+    if (!ai) out.push(na("CARD-006","Human approval gate, no auto-execute","high",["LLM06","LLM05"],["GOVERN 3","MANAGE 1"]));
+    else if (m("gate")) out.push(F("CARD-006","Human approval gate, no auto-execute","PASS","high",["LLM06","LLM05"],["GOVERN 3","MANAGE 1"],""));
+    else out.push(F("CARD-006","Human approval gate, no auto-execute","FAIL", sig.execs?"high":"medium",["LLM06","LLM05"],["GOVERN 3","MANAGE 1"],
+      (sig.execs?"Model output reaches an execution primitive with no approval step in between. ":"No approval step was found. ")+"Route every consequential action through a logged approve/reject decision by a named human."));
+    out.push(!ai ? na("CARD-007","Independent verification of model output","high",["LLM09"],["MEASURE 2","MANAGE 2"]) : F("CARD-007","Independent verification of model output", m("checker")?"PASS":"FAIL","high",["LLM09"],["MEASURE 2","MANAGE 2"],"Re-derive the claim from source data and adjudicate; the model must never grade its own output."));
+    out.push(!ai ? na("CARD-008","Structured output validated","medium",["LLM05"],["MEASURE 2"]) : F("CARD-008","Structured output validated", (m("json_parse")&&m("validation"))?"PASS":"FAIL","medium",["LLM05"],["MEASURE 2"],"Ask for strict JSON, parse inside try/except, validate the shape before anything downstream reads it."));
+    out.push(!ai ? na("CARD-009","Prompt-injection detection","high",["LLM01"],["MEASURE 2","MANAGE 2"]) : F("CARD-009","Prompt-injection detection", m("injection")?"PASS":"FAIL","high",["LLM01"],["MEASURE 2","MANAGE 2"],"Scan untrusted input for published injection patterns before it reaches the prompt; keep a red-team suite in the tests."));
+    out.push(!ai ? na("CARD-010","Tamper-evident audit log","medium",[],["GOVERN 4","MEASURE 3"]) : F("CARD-010","Tamper-evident audit log", m("chain")?"PASS":"FAIL","medium",[],["GOVERN 4","MEASURE 3"],"Hash-chain the log and write a manifest of run outputs so edits are detectable."));
+    out.push(!ai ? na("CARD-011","Accuracy evaluation exists","high",["LLM09"],["MEASURE 1","MEASURE 2"]) : F("CARD-011","Accuracy evaluation exists", m("eval")?"PASS":"FAIL","high",["LLM09"],["MEASURE 1","MEASURE 2"],"Score the model against deterministic ground truth and commit the numbers with their evidence."));
+    out.push(!ai ? na("CARD-012","Drift / regression detection","low",["LLM09"],["MEASURE 3","MANAGE 4"]) : F("CARD-012","Drift / regression detection", m("drift")?"PASS":"FAIL","low",["LLM09"],["MEASURE 3","MANAGE 4"],"Diff each run against the previous one and fail CI when a passing case regresses."));
+    out.push(!ai ? na("CARD-013","Model identifier declared","medium",["LLM03"],["GOVERN 4","MAP 2"]) : F("CARD-013","Model identifier declared", sig.modelIds.size?"PASS":"FAIL","medium",["LLM03"],["GOVERN 4","MAP 2"],"Name the exact model in code (env-overridable) so a card can say which model produced which numbers."));
+    out.push(!ai ? na("CARD-014","Explicit timeouts on model calls","low",["LLM10"],["MANAGE 2"]) : F("CARD-014","Explicit timeouts on model calls", m("timeout")?"PASS":"FAIL","low",["LLM10"],["MANAGE 2"],"Pass an explicit timeout and a bounded retry count to the client."));
+    out.push(F("CARD-015","Tests and CI present", facts.tests_ci?"PASS":"FAIL","medium",[],["MEASURE 1","GOVERN 1"],"Governance claims need a test that fails when the control is removed, and CI that runs it."));
+    out.push(!facts.tests_ci ? na("CARD-016","CI runs without model API secrets","low",["LLM10"],["MAP 3","GOVERN 6"]) : F("CARD-016","CI runs without model API secrets", facts.ci_secret?"FAIL":"PASS","low",["LLM10"],["MAP 3","GOVERN 6"],"Run CI in mock mode; isolate any live job behind a manual trigger with its own budget ceiling."));
+    out.push(F("CARD-017","License and intended-use documentation", facts.license_readme?"PASS":"FAIL","medium",[],["GOVERN 4","GOVERN 1"],"State the license and, in the README's first paragraph, what the system is for."));
+    out.push(F("CARD-018","Dependencies pinned", facts.deps_pinned?"PASS":"FAIL","medium",["LLM03"],["GOVERN 6"],"Pin every runtime dependency to an exact version; model SDKs change behaviour between minor versions."));
+    out.push(!ai ? na("CARD-019","Data minimisation stated or enforced","medium",["LLM02"],["MAP 4","MANAGE 2"]) : F("CARD-019","Data minimisation stated or enforced", ((facts.license_readme&&facts.data_statement)||m("redaction"))?"PASS":"FAIL","medium",["LLM02"],["MAP 4","MANAGE 2"],"Write down exactly which fields reach the model, and enforce it with a redaction / allow-list step."));
+    return out;
+  }
+
+  function register(checks, ai){
+    return Object.entries(OWASP).map(([id,name]) => {
+      const related = checks.filter(c => c.owasp.includes(id));
+      let status, note;
+      if (NOT_ASSESSED[id]) { status="NOT_ASSESSED"; note=NOT_ASSESSED[id]; }
+      else if (!related.length || related.every(c => c.status==="NA")) { status="NOT_APPLICABLE"; note = ai ? "No applicable check." : "No model usage detected."; }
+      else { const live=related.filter(c=>c.status!=="NA"), fails=live.filter(c=>c.status==="FAIL");
+        status = !fails.length ? "MITIGATED" : fails.length===live.length ? "UNMITIGATED" : "PARTIAL"; note = live.map(c=>c.id+" "+c.status).join("; "); }
+      return {id,name,status,checks:related.map(c=>c.id),note};
+    });
+  }
+
+  function summarize(checks, ai){
+    const pass=checks.filter(c=>c.status==="PASS").length, fail=checks.filter(c=>c.status==="FAIL").length, na=checks.filter(c=>c.status==="NA").length;
+    const score = (pass+fail) ? Math.round(100*pass/(pass+fail)) : 0;
+    const highFails = checks.filter(c=>c.status==="FAIL"&&c.sev==="high").length;
+    const verdict = !ai ? "NO MODEL USAGE DETECTED" : !fail ? "GOVERNED" : highFails ? "GAPS FOUND" : "MINOR GAPS";
+    return {pass,fail,na,score,highFails,verdict};
+  }
+
+  function analyze(src, facts){ const sig=signalsOf(src); const checks=runChecks(sig,facts); return {sig, checks, register:register(checks,sig.usesAi), summary:summarize(checks,sig.usesAi)}; }
+
+  // ---- source generator: turns toggle state into ai_client.py ----
+  const CODE_TOGGLES = [
+    ["hardcoded_key","Hardcoded API key in source","CARD-002",true],
+    ["env_key","Key read from environment","CARD-003"],
+    ["budget","Budget ceiling charged before each call","CARD-004"],
+    ["mock","Mock provider is the default","CARD-005"],
+    ["gate","Human approval gate","CARD-006"],
+    ["exec","Model output piped into subprocess","CARD-006",true],
+    ["checker","Independent checker re-derives truth","CARD-007"],
+    ["validation","Strict JSON parse + schema validation","CARD-008"],
+    ["injection","Prompt-injection patterns scanned","CARD-009"],
+    ["chain","Hash-chained audit log","CARD-010"],
+    ["evalb","Precision / recall benchmark","CARD-011"],
+    ["drift","Drift detection between runs","CARD-012"],
+    ["model","Model identifier pinned","CARD-013"],
+    ["timeout","Explicit timeout + retry limit","CARD-014"],
+    ["redact","Redaction before the prompt","CARD-019"],
+  ];
+  const FACT_TOGGLES = [
+    ["tests_ci","Tests + CI workflow exist","CARD-015"],
+    ["ci_secret","CI injects a model API secret","CARD-016",true],
+    ["license_readme","LICENSE + README present","CARD-017"],
+    ["deps_pinned","Dependencies pinned (==)","CARD-018"],
+    ["data_statement","README states what is never sent","CARD-019"],
+  ];
+  const PRESETS = {
+    ungoverned: {hardcoded_key:true, exec:true, model:true, tests_ci:false, ci_secret:false, license_readme:false, deps_pinned:false, data_statement:false},
+    governed: Object.fromEntries([...CODE_TOGGLES,...FACT_TOGGLES].map(([k,,,danger]) => [k, !danger])),
+  };
+  function fakeKey(){ return "sk-ant-" + "FAKE".repeat(6); }   // assembled at runtime: no key-shaped literal in this file
+
+  function buildSource(st){
+    const L=[];
+    L.push('"""ai_client.py — synthetic demo client (generated from the toggles)."""');
+    L.push("import json"); L.push("import os"); L.push("import re");
+    if (st.exec) L.push("import subprocess");
+    L.push("import anthropic"); L.push("");
+    L.push(st.model ? 'MODEL_NAME = os.environ.get("MODEL_NAME", "claude-sonnet-4-5")' : "MODEL_NAME = load_model_from_config()   # whatever the config says today");
+    L.push("");
+    if (st.budget){ L.push("class BudgetCeiling:"); L.push("    def __init__(self, max_usd):"); L.push("        self.max_usd, self.spent_usd = max_usd, 0.0");
+      L.push("    def charge(self, estimated_cost_usd):"); L.push("        if self.spent_usd + estimated_cost_usd > self.max_usd:"); L.push('            raise RuntimeError("cost ceiling reached")');
+      L.push("        self.spent_usd += estimated_cost_usd"); L.push(""); L.push("budget = BudgetCeiling(max_usd=2.00)"); L.push(""); }
+    if (st.mock){ L.push("class MockProvider:"); L.push('    """Deterministic offline provider — the default. $0."""'); L.push("    def complete(self, prompt):");
+      L.push('        return \'{"summary": "mock", "risk": "low"}\''); L.push(""); }
+    if (st.injection){ L.push("INJECTION_PATTERNS = ["); L.push('    re.compile(r"(?i)ignore (all )?previous instructions"),'); L.push('    re.compile(r"(?i)you are now"),'); L.push("]"); L.push(""); }
+    if (st.redact){ L.push("def redact(text):"); L.push('    """Strip anything credential-shaped before it reaches a prompt."""'); L.push('    return re.sub(r"sk-[A-Za-z0-9-]{8,}", "<redacted>", text)'); L.push(""); }
+    if (st.validation){ L.push("def validate_schema(obj):"); L.push('    if set(obj) != {"summary", "risk"} or obj["risk"] not in ("low", "medium", "high"):'); L.push('        raise ValueError("schema violation")'); L.push("    return obj"); L.push(""); }
+    if (st.chain){ L.push("class AuditLog:"); L.push("    def __init__(self):"); L.push("        self.entries = []"); L.push("    def append(self, event, detail):");
+      L.push('        prev_hash = self.entries[-1]["hash"] if self.entries else "0" * 64'); L.push('        entry = {"event": event, "detail": detail, "prev_hash": prev_hash}');
+      L.push('        entry["hash"] = __import__("hashlib").sha256(json.dumps(entry, sort_keys=True).encode()).hexdigest()'); L.push("        self.entries.append(entry)"); L.push(""); L.push("log = AuditLog()"); L.push(""); }
+    if (st.gate){ L.push("class ApprovalGate:"); L.push('    """No consequential action without a logged human decision."""'); L.push("    def approve(self, finding_id, approver):");
+      L.push('        if not approver.strip():'); L.push('            raise ValueError("approver required")'); L.push(st.chain ? '        log.append("approved", {"finding": finding_id, "approver": approver})' : "        self.decisions[finding_id] = approver");
+      L.push("    def reject(self, finding_id, approver, reason):"); L.push("        pass"); L.push(""); L.push("gate = ApprovalGate()"); L.push(""); }
+    if (st.checker){ L.push("class CheckerAgent:"); L.push('    """Independent verification: re-derives ground_truth from the metadata itself."""'); L.push("    def adjudicate(self, draft, metadata):");
+      L.push('        ground_truth = "high" if "grant dba" in metadata.lower() else "low"'); L.push('        return "PASS" if draft["risk"] == ground_truth else "REVIEW"'); L.push(""); }
+    if (st.evalb){ L.push("def benchmark(tp, fp, fn):"); L.push("    precision = tp / (tp + fp) if tp + fp else 0.0"); L.push("    recall = tp / (tp + fn) if tp + fn else 0.0");
+      L.push('    return {"precision": precision, "recall": recall}'); L.push(""); }
+    if (st.drift){ L.push("def detect_drift(old, new):"); L.push('    return [k for k, v in new.items() if v == "FAIL" and old.get(k) == "PASS"]'); L.push(""); }
+    // client construction
+    const args=[];
+    if (st.hardcoded_key) args.push('api_key="' + fakeKey() + '"');
+    else if (st.env_key) args.push('api_key=os.environ["ANTHROPIC_API_KEY"]');
+    if (st.timeout) args.push("timeout=30.0", "max_retries=2");
+    L.push("client = anthropic.Anthropic(" + args.join(", ") + ")");
+    L.push("");
+    L.push("def ask(metadata):");
+    if (st.injection){ L.push("    for rx in INJECTION_PATTERNS:"); L.push("        if rx.search(metadata):"); L.push('            raise ValueError("prompt injection pattern detected; quarantined")'); }
+    if (st.redact) L.push("    metadata = redact(metadata)");
+    if (st.mock){ L.push('    if os.environ.get("LIVE_MODEL") != "1":'); L.push("        raw = MockProvider().complete(metadata)"); L.push("    else:"); }
+    const ind = st.mock ? "        " : "    ";
+    if (st.budget) L.push(ind + "budget.charge(0.002)   # charged BEFORE the network call");
+    L.push(ind + "msg = client.messages.create(model=MODEL_NAME, max_tokens=300,");
+    L.push(ind + '                             messages=[{"role": "user", "content": metadata}])');
+    L.push(ind + "raw = msg.content[0].text");
+    if (st.validation){ L.push("    try:"); L.push("        draft = validate_schema(json.loads(raw))"); L.push("    except (json.JSONDecodeError, ValueError):"); L.push('        draft = {"summary": "", "risk": "high"}'); }
+    else L.push("    draft = json.loads(raw)");
+    if (st.checker){ L.push('    if CheckerAgent().adjudicate(draft, metadata) != "PASS":'); L.push('        draft["risk"] = "review"'); }
+    if (st.chain) L.push('    log.append("draft", {"risk": draft["risk"]})');
+    L.push("    return draft");
+    L.push("");
+    if (st.exec){ L.push("def apply(draft):");
+      if (st.gate) L.push('    gate.approve(draft["summary"], approver=input("approver: "))   # a human signs first');
+      L.push('    subprocess.run(draft["summary"], shell=True)' + (st.gate ? "" : "   # model output executed directly")); L.push(""); }
+    return L.join("\n") + "\n";
+  }
+  function factsOf(st){ return {tests_ci:!!st.tests_ci, ci_secret:!!st.ci_secret, license_readme:!!st.license_readme, deps_pinned:!!st.deps_pinned, data_statement:!!st.data_statement}; }
+  return {CODE_TOGGLES, FACT_TOGGLES, PRESETS, buildSource, factsOf, analyze, signalsOf, runChecks, OWASP};
+})();
+if (typeof module !== "undefined") module.exports = CybwaycardDemo;
+</script>
+
+<script>
+(() => {
+  const D = CybwaycardDemo;
+  const state = {};
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+  function renderToggles(container, defs){
+    container.innerHTML = defs.map(([k,label,ref,danger]) =>
+      `<div class="field ${danger?"danger":""}"><label for="t-${k}">${esc(label)}<span class="rid">${esc(ref)}</span></label>
+       <span class="tog"><input type="checkbox" id="t-${k}" data-key="${k}"><span class="sl"></span></span></div>`).join("");
+    container.querySelectorAll("input").forEach(el => el.addEventListener("change", () => { state[el.dataset.key]=el.checked; update(); }));
+  }
+  function applyPreset(name){
+    for (const [k] of [...D.CODE_TOGGLES, ...D.FACT_TOGGLES]) state[k] = !!D.PRESETS[name][k];
+    document.querySelectorAll("input[data-key]").forEach(el => el.checked = !!state[el.dataset.key]);
+    update();
+  }
+  function update(){
+    const src = D.buildSource(state), facts = D.factsOf(state), r = D.analyze(src, facts);
+    $("#src").textContent = src; $("#loc").textContent = src.split("\n").length + " lines";
+    const s = r.summary, vcls = {GOVERNED:"ok","GAPS FOUND":"bad","MINOR GAPS":"warn"}[s.verdict] || "";
+    let h = `<div class="verdict ${vcls}"><span class="dot"></span>${esc(s.verdict)}</div>`;
+    h += `<div class="summary"><div class="card kpi"><div class="v ${s.score>=80?"ok":"bad"}">${s.score}%</div><div class="cap">governance score</div></div>
+      <div class="card kpi"><div class="v ok">${s.pass}</div><div class="cap">pass</div></div>
+      <div class="card kpi"><div class="v ${s.fail?"bad":"ok"}">${s.fail}</div><div class="cap">fail</div></div>
+      <div class="card kpi"><div class="v na">${s.na}</div><div class="cap">n/a</div></div>
+      <div class="card kpi"><div class="v ${s.highFails?"bad":"ok"}">${s.highFails}</div><div class="cap">high-severity gaps</div></div></div>`;
+    h += `<div class="label">Governance checks</div><div class="find">` + r.checks.map(c =>
+      `<div class="f ${c.status==="FAIL"?c.sev:c.status}"><div class="stripe"></div><div class="b"><div class="top"><span class="id">${c.id}</span><span class="t">${esc(c.title)}</span><span class="pill ${c.status}">${c.status}</span></div>` +
+      (c.status==="FAIL" ? `<div class="g">${esc(c.guidance)}</div>` : "") + `</div></div>`).join("") + `</div>`;
+    h += `<div class="label">AI risk register — OWASP Top 10 for LLM Applications</div><div class="card tbl"><table><tr><th>ID</th><th>Risk</th><th>Status</th><th>Checks</th></tr>` +
+      r.register.map(x => `<tr><td>${x.id}</td><td>${esc(x.name)}</td><td><span class="pill ${x.status}">${x.status.replace(/_/g," ")}</span></td><td>${esc(x.checks.join(", ")||"—")}</td></tr>`).join("") + `</table></div>`;
+    $("#results").innerHTML = h;
+  }
+  renderToggles($("#code-toggles"), D.CODE_TOGGLES);
+  renderToggles($("#fact-toggles"), D.FACT_TOGGLES);
+  document.querySelectorAll("[data-preset]").forEach(b => b.addEventListener("click", () => applyPreset(b.dataset.preset)));
+  applyPreset("ungoverned");
+})();
+</script>
+</body>
+</html>
